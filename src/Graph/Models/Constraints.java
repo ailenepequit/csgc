@@ -47,33 +47,3 @@ public class Constraints {
 			//else false
 		}
 	}
-
-
-/*
-	//find rooms for each course
-
-	i = 1; 
-	j = 1;
-	for(int i = 0; i>c.size(); i++){
-	for(int j = 0; j>r.size(); j++){
-		if(c.get(i).getClassSize() <= r.get(j).	getCapacity()){
-		c.setRoom(r.get(j).getID());	
-		}
-
-		k = j;
-		
-	if(c.get(i).getClassSize() >= r.get(k).getCapacity()){
-		for(int k = j; k > r.size(); k++){
-			
-		}
-	}
-	}
-
-	if(start_time < faculty.getAvailStartTime() || start_time < faculty.getAvailEndTime() && end_time > faculty.getAvailEndTime){
-		
-	}
-
-	if(c.getTimeRoom() == 0)
-		t.setTimeSlot();
-		t.setRoom();
-	}*/

@@ -1,7 +1,5 @@
 package Graph.Models;
 
-import DAO.SubjectDAO;
-
 import java.util.ArrayList;
 
 import DAO.OfferingDAO;
@@ -10,8 +8,6 @@ import DAO.RoomDAO;
 public class Offering {
 
 	private OfferingDAO offeringDAO = new OfferingDAO();
-	private SubjectDAO subjectDAO = new SubjectDAO();
-	private Subject s = new Subject();
 	private RoomDAO r = new RoomDAO();
 	private Faculty f = new Faculty();
 	private int id, class_size, degree, color;

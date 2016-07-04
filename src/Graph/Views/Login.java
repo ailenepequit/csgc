@@ -29,11 +29,6 @@ public class Login extends JFrame {
 	static ArrayList<Offering> c = offering.offeringsList();;
 
 	public static void main(String[] args) {	
-//		c = offering.offeringsList();
-//		for (int i = 0; i < c.size(); i++) {
-//			c.get(i).setRoom(i + 1, 0);
-//		}
-//		offering.deleteAllDayscheds();
 		new Login();
 	}
 	
@@ -78,7 +73,7 @@ public class Login extends JFrame {
 				@SuppressWarnings("deprecation")
 				String pwd = passwordField.getText();
 				if(verifyUser(user,pwd) == true){
-					HomeView tv = new HomeView("clear");
+					HomeView tv = new HomeView();
 					WindowController w = new WindowController(offering, tv);
 					dispose();
 					w.viewHomePage(tv);

@@ -48,12 +48,12 @@ import java.awt.Label;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerListModel;
 import javax.swing.ImageIcon;
-import Graph.Views.GraphViz;
+import javax.swing.JTextArea;
 
 @SuppressWarnings({ "rawtypes", "unchecked", "serial" })
 public class HomeView extends JFrame {
 
-	private int id, roomID, bID, subjectID, facultyID;
+	private int offeringID, roomID, bID, subjectID, facultyID;
 	private JPanel contentPane, formPanel, timeTablePanel, sidebarPanel, roomsPanel, subjectsPanel, facultyPanel,
 			visualizationPanel;
 	private JTable table, roomTable;
@@ -109,8 +109,11 @@ public class HomeView extends JFrame {
 	private JTextField bdayField;
 	private JTextField phoneField;
 	private JTextField addressField;
+	private JTextField numSubjectsField;
+	private JTextField numRoomsField;
+	private JTextField numFacultyField;
 
-	public HomeView(String cmd) {
+	public HomeView() {
 		contentPane = new JPanel();
 		contentPane.setForeground(new Color(47, 79, 79));
 		contentPane.setBackground(new Color(204, 204, 204));
@@ -119,7 +122,6 @@ public class HomeView extends JFrame {
 		setContentPane(contentPane);
 
 		components();
-		menuItems();
 
 		setDefaultCloseOperation(0);
 		setSize(1280, 740);
@@ -137,6 +139,7 @@ public class HomeView extends JFrame {
 		roomsPanelComponents();
 		subjectPanelComponents();
 		facultyPanelComponents();
+		visualizationPanelComponents();
 	}
 
 	public void headerComponents() {
@@ -192,14 +195,14 @@ public class HomeView extends JFrame {
 		footerlbl.setForeground(Color.WHITE);
 		footerlbl.setBackground(Color.BLACK);
 		footerlbl.setOpaque(true);
-		footerlbl.setBounds(0, 649, 1263, 31);
+		footerlbl.setBounds(0, 670, 1263, 31);
 		contentPane.add(footerlbl);
 	}
 
 	public void sidebarComponents() {
 		sidebarPanel = new JPanel();
 		sidebarPanel.setBackground(new Color(51, 51, 51));
-		sidebarPanel.setBounds(0, 57, 242, 593);
+		sidebarPanel.setBounds(0, 57, 242, 615);
 		sidebarPanel.setBorder(new LineBorder(Color.black, 1));
 		sidebarPanel.setLayout(null);
 
@@ -264,14 +267,15 @@ public class HomeView extends JFrame {
 		sidebarButtonFormat(visualizationBtn, new ImageIcon(imagesPath + "graph.png"));
 		visualizationBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				GraphViz g = new GraphViz();
 				timeTablePanel.setVisible(false);
 				formPanel.setVisible(false);
 				roomsPanel.setVisible(false);
 				subjectsPanel.setVisible(false);
 				facultyPanel.setVisible(false);
 				visualizationPanel.setVisible(true);
+				numSubjectsField.setText("" + subject.count());
+				numRoomsField.setText("" + room.count());
+				numFacultyField.setText("" + faculty.count());
 			}
 		});
 		contentPane.add(sidebarPanel);
@@ -295,7 +299,7 @@ public class HomeView extends JFrame {
 
 	public void timetableComponents() {
 		timeTablePanel = new JPanel();
-		timeTablePanel.setBounds(252, 73, 1002, 566);
+		timeTablePanel.setBounds(252, 73, 1002, 586);
 
 		// headers for the table
 		offerings_columns = new String[] { "Id", "SY", "Semester", "Start Time", "End Time", "Day", "Description",
@@ -308,7 +312,7 @@ public class HomeView extends JFrame {
 		}
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 47, 982, 466);
+		scrollPane.setBounds(10, 47, 982, 481);
 		scrollPane.getViewport().setBackground(Color.WHITE);
 
 		offeringModel = new DefaultTableModel(offerings_data, offerings_columns) {
@@ -347,7 +351,7 @@ public class HomeView extends JFrame {
 				try {
 					int i = table.getSelectedRow();
 
-					id = Integer.parseInt(table.getValueAt(i, 0).toString());
+					offeringID = Integer.parseInt(table.getValueAt(i, 0).toString());
 
 					syComboBox.setSelectedItem(offeringModel.getValueAt(i, 1).toString());
 					semComboBox.setSelectedItem(offeringModel.getValueAt(i, 2).toString());
@@ -403,15 +407,15 @@ public class HomeView extends JFrame {
 		});
 
 		btnDeleteOffering = new JButton("Delete");
-		btnDeleteOffering.setBounds(897, 526, 95, 25);
+		btnDeleteOffering.setBounds(894, 539, 95, 25);
 		buttonFormat(btnDeleteOffering, new ImageIcon(deleteIcon));
 		btnDeleteOffering.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int i = table.getSelectedRow();
-				id = Integer.parseInt(table.getValueAt(i, 0).toString());
+				offeringID = Integer.parseInt(table.getValueAt(i, 0).toString());
 				if (i >= 0) {
-					offering.deleteOffering(id);
-					offering.deleteDaysched(id);
+					offering.deleteOffering(offeringID);
+					offering.deleteDaysched(offeringID);
 					offeringModel.removeRow(i);
 				} else {
 					System.out.println("Delete Error");
@@ -434,7 +438,7 @@ public class HomeView extends JFrame {
 		});
 
 		editBtn = new JButton("Edit");
-		editBtn.setBounds(814, 526, 70, 25);
+		editBtn.setBounds(814, 539, 70, 25);
 		buttonFormat(editBtn, new ImageIcon(updateIcon));
 		editBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -459,17 +463,6 @@ public class HomeView extends JFrame {
 			}
 		});
 
-		visualizationPanel = new JPanel();
-		visualizationPanel.setVisible(false);
-		visualizationPanel.setBackground(Color.WHITE);
-		visualizationPanel.setBounds(252, 72, 1002, 566);
-		contentPane.add(visualizationPanel);
-		visualizationPanel.setLayout(null);
-
-		JPanel graphPanel = new JPanel();
-		graphPanel.setBounds(10, 11, 772, 544);
-		visualizationPanel.add(graphPanel);
-
 		contentPane.add(timeTablePanel);
 		timeTablePanel.setLayout(null);
 		timeTablePanel.add(printBtn);
@@ -485,7 +478,7 @@ public class HomeView extends JFrame {
 		formPanel = new JPanel();
 		formPanel.setVisible(false);
 		formPanel.setBackground(new Color(240, 240, 240));
-		formPanel.setBounds(252, 72, 1002, 566);
+		formPanel.setBounds(252, 72, 1002, 587);
 		formPanel.setLayout(null);
 
 		formPanelButtons();
@@ -553,8 +546,8 @@ public class HomeView extends JFrame {
 						Integer.parseInt(slots));
 				offering.addDaySched(offering.getLastOfferno(), offering.getDaycode(day), to24hr(start_time),
 						to24hr(end_time));
-				addOfferingToTable(offering.getLastOfferno(), sy, sem, start_time, end_time, day,
-						subj, facultyname, slots, rm);
+				addOfferingToTable(offering.getLastOfferno(), sy, sem, start_time, end_time, day, subj, facultyname,
+						slots, rm);
 			}
 		});
 
@@ -572,8 +565,8 @@ public class HomeView extends JFrame {
 				;
 
 				int i = table.getSelectedRow();
-				id = Integer.parseInt(table.getValueAt(i, 0).toString());
-				offeringModel.setValueAt(id, i, 0);
+				offeringID = Integer.parseInt(table.getValueAt(i, 0).toString());
+				offeringModel.setValueAt(offeringID, i, 0);
 				offeringModel.setValueAt(syComboBox.getSelectedItem(), i, 1);
 				offeringModel.setValueAt(semComboBox.getSelectedItem(), i, 2);
 				offeringModel.setValueAt(start_time, i, 3);
@@ -585,18 +578,18 @@ public class HomeView extends JFrame {
 				offeringModel.setValueAt(roomComboBox.getSelectedItem(), i, 9);
 
 				if (roomname.equals(null) || roomname.equals("null"))
-					offering.editOffering(id, faculty.getFacID(facultyname), "NULL",
+					offering.editOffering(offeringID, faculty.getFacID(facultyname), "NULL",
 							subject.getID(subjectComboBox.getSelectedItem().toString()),
 							syComboBox.getSelectedItem().toString(), semComboBox.getSelectedItem().toString(),
 							Integer.parseInt(slotsField.getText()));
 				else
-					offering.editOffering(id, faculty.getFacID(facultyname), room.getID(roomname),
+					offering.editOffering(offeringID, faculty.getFacID(facultyname), room.getID(roomname),
 							subject.getID(subjectComboBox.getSelectedItem().toString()),
 							syComboBox.getSelectedItem().toString(), semComboBox.getSelectedItem().toString(),
 							Integer.parseInt(slotsField.getText()));
 				String st = to24hr(start_time);
 				String et = to24hr(end_time);
-				offering.editDaySched(id, offering.getDaycode(dayComboBox.getSelectedItem().toString()), st, et);
+				offering.editDaySched(offeringID, offering.getDaycode(dayComboBox.getSelectedItem().toString()), st, et);
 			}
 		});
 
@@ -615,10 +608,10 @@ public class HomeView extends JFrame {
 		formPanel.add(btnCancel);
 	}
 
-	public void addOfferingToTable(int id, String sy, String sem, String start_time, String end_time, String day,
+	public void addOfferingToTable(int offeringID, String sy, String sem, String start_time, String end_time, String day,
 			String subject, String faculty, String slots, Object rm) {
 		Object[] newOffering = new Object[offeringModel.getRowCount()];
-		newOffering[0] = id;
+		newOffering[0] = offeringID;
 		newOffering[1] = sy;
 		newOffering[2] = sem;
 		newOffering[3] = start_time;
@@ -770,7 +763,7 @@ public class HomeView extends JFrame {
 		String[] type = { "Laboratory", "Lecture" };
 
 		roomsPanel = new JPanel();
-		roomsPanel.setBounds(253, 73, 1001, 565);
+		roomsPanel.setBounds(253, 73, 1001, 586);
 		roomsPanel.setLayout(null);
 		roomsPanel.setVisible(false);
 
@@ -953,8 +946,8 @@ public class HomeView extends JFrame {
 		roomFormPanel.add(typeComboBox);
 		roomFormPanel.add(capacityField);
 	}
-	
-	public void addRoomToTable(int roomID, String room, String building, String type, String capacity){
+
+	public void addRoomToTable(int roomID, String room, String building, String type, String capacity) {
 		Object[] newRoom = new Object[roomTable.getRowCount()];
 		newRoom[0] = roomID;
 		newRoom[1] = room;
@@ -992,7 +985,7 @@ public class HomeView extends JFrame {
 		String[] yr = { "1", "2", "3", "4" };
 
 		subjectsPanel = new JPanel();
-		subjectsPanel.setBounds(253, 73, 1001, 566);
+		subjectsPanel.setBounds(253, 73, 1001, 586);
 		subjectsPanel.setLayout(null);
 		subjectsPanel.setVisible(false);
 
@@ -1181,7 +1174,7 @@ public class HomeView extends JFrame {
 		String[] gender = { "Male", "Female" };
 
 		facultyPanel = new JPanel();
-		facultyPanel.setBounds(253, 73, 1001, 566);
+		facultyPanel.setBounds(253, 73, 1001, 586);
 		facultyPanel.setVisible(false);
 		facultyPanel.setLayout(null);
 
@@ -1386,7 +1379,74 @@ public class HomeView extends JFrame {
 		facultyPanel.add(btnNewFaculty);
 		facultyPanel.add(facultyScrollPane);
 		facultyPanel.add(lblFacultyList);
+	}
 
+	public void visualizationPanelComponents() {
+		visualizationPanel = new JPanel();
+		visualizationPanel.setVisible(false);
+		visualizationPanel.setBackground(Color.WHITE);
+		visualizationPanel.setBounds(252, 72, 1002, 587);
+		visualizationPanel.setLayout(null);
+
+		JPanel graphPanel = new JPanel();
+		graphPanel.setBounds(10, 11, 982, 394);
+
+		JButton btnVisualize = new JButton("Visualize");
+		btnVisualize.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		btnVisualize.setBounds(819, 416, 173, 30);
+		btnVisualize.setIcon(new ImageIcon(imagesPath + "visualize.png"));
+		
+		JTextArea logArea = new JTextArea();
+		logArea.setLineWrap(true);
+		logArea.setBackground(new Color(204, 255, 204));
+		logArea.setColumns(2);
+		logArea.setEditable(false);
+		logArea.setFont(new Font("Monospaced", Font.PLAIN, 13));
+		logArea.setBounds(10, 416, 799, 160);
+		
+		numSubjectsField = new JTextField();
+		numSubjectsField.setHorizontalAlignment(SwingConstants.RIGHT);
+		numSubjectsField.setBackground(Color.WHITE);
+		numSubjectsField.setEditable(false);
+		numSubjectsField.setBounds(934, 467, 58, 25);
+		numSubjectsField.setColumns(10);
+
+		numRoomsField = new JTextField();
+		numRoomsField.setHorizontalAlignment(SwingConstants.RIGHT);
+		numRoomsField.setBackground(Color.WHITE);
+		numRoomsField.setEditable(false);
+		numRoomsField.setBounds(934, 503, 58, 25);
+		numRoomsField.setColumns(10);
+
+		numFacultyField = new JTextField();
+		numFacultyField.setHorizontalAlignment(SwingConstants.RIGHT);
+		numFacultyField.setBackground(Color.WHITE);
+		numFacultyField.setEditable(false);
+		numFacultyField.setBounds(934, 539, 58, 25);
+		numFacultyField.setColumns(10);
+
+		JLabel lblOfSubjects = new JLabel("# of Subjects:");
+		labelFormat(lblOfSubjects);
+		lblOfSubjects.setBounds(819, 472, 105, 14);
+		
+		JLabel lblOfRooms = new JLabel("# of Rooms:");
+		labelFormat(lblOfRooms);
+		lblOfRooms.setBounds(819, 508, 105, 14);
+		
+		JLabel lblOfFaculty = new JLabel("# of Faculty:");
+		labelFormat(lblOfFaculty);
+		lblOfFaculty.setBounds(819, 544, 105, 14);
+		
+		contentPane.add(visualizationPanel);
+		visualizationPanel.add(graphPanel);
+		visualizationPanel.add(btnVisualize);
+		visualizationPanel.add(logArea);
+		visualizationPanel.add(numSubjectsField);
+		visualizationPanel.add(numRoomsField);
+		visualizationPanel.add(numFacultyField);
+		visualizationPanel.add(lblOfSubjects);
+		visualizationPanel.add(lblOfRooms);
+		visualizationPanel.add(lblOfFaculty);
 	}
 
 	public void clearFacultyFormFields() {
@@ -1401,86 +1461,6 @@ public class HomeView extends JFrame {
 		btnUpdateFaculty.setEnabled(false);
 		btnDeleteFaculty.setEnabled(false);
 		btnViewFacultyTimetable.setEnabled(false);
-	}
-
-	public void menuItems() {
-		// JMenuBar menuBar = new JMenuBar();
-		// menuBar.setBorderPainted(false);
-		// menuBar.setForeground(new Color(0, 0, 0));
-		// menuBar.setBackground(new Color(204, 204, 204));
-		// menuBar.setMargin(new Insets(0, 5, 0, 0));
-		// setJMenuBar(menuBar);
-		//
-		// JMenu mnFile = new JMenu("File");
-		// mnFile.setForeground(new Color(0, 0, 0));
-		// mnFile.setBackground(new Color(153, 153, 153));
-		// menuBar.add(mnFile);
-		//
-		// JMenuItem mntmGenerateTimetable = new JMenuItem("Generate
-		// Timetable");
-		// mnFile.add(mntmGenerateTimetable);
-		// mntmGenerateTimetable.addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent arg0) {
-		// }
-		// });
-		//
-		// JMenuItem mntmPrintTimetable = new JMenuItem("Print Timetable");
-		// mnFile.add(mntmPrintTimetable);
-		// mntmPrintTimetable.addActionListener(new ActionListener() {
-		// @SuppressWarnings("deprecation")
-		// public void actionPerformed(ActionEvent arg0) {
-		// CourseScheduleView cv = new CourseScheduleView();
-		// cv.show();
-		// }
-		// });
-		// mntmPrintTimetable.setMnemonic(KeyEvent.VK_X);
-		//
-		// JMenuItem mntmExportToExcel = new JMenuItem("Export to Excel");
-		// mnFile.add(mntmExportToExcel);
-		// mntmExportToExcel.addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent arg0) {
-		// // fileChooser();
-		// }
-		// });
-		// JMenu mnView = new JMenu("View");
-		// mnView.setForeground(new Color(0, 0, 0));
-		// mnView.setBackground(new Color(204, 204, 204));
-		// menuBar.add(mnView);
-		//
-		// JMenuItem mntmSubjects = new JMenuItem("Subjects");
-		// mnView.add(mntmSubjects);
-		// mntmSubjects.addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent arg0) {
-		//
-		// }
-		// });
-		//
-		// JMenuItem mntmFaculty = new JMenuItem("Faculty");
-		// mnView.add(mntmFaculty);
-		// mntmFaculty.addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent arg0) {
-		//
-		// }
-		// });
-		//
-		// JMenuItem mntmRooms = new JMenuItem("Rooms");
-		// mnView.add(mntmRooms);
-		// mntmRooms.addActionListener(new ActionListener() {
-		// public void actionPerformed(ActionEvent e) {
-		//
-		// }
-		// });
-		//
-		// JMenuItem mntmVisualization = new JMenuItem("Visualization");
-		// mnView.add(mntmVisualization);
-		// mntmVisualization.addActionListener(new ActionListener() {
-		// @SuppressWarnings("deprecation")
-		// public void actionPerformed(ActionEvent e) {
-		// dispose();
-		// GraphVisualization gv = new GraphVisualization();
-		// gv.show();
-		// }
-		// });
 	}
 
 	public void comboBoxFormat(JComboBox cb) {
