@@ -13,34 +13,44 @@ import Graph.Models.Subject;
 
 public class SubjectDAO {
 
-	private int id;
-	private String url = "jdbc:mysql://localhost:3306/absked?zeroDateTimeBehavior=convertToNull&autoReconnect=true&characterEncoding=UTF-8&characterSetResults=UTF-8";
+	private int sID;
+	private String url = "jdbc:mysql://localhost:3300/absked?zeroDateTimeBehavior=convertToNull&autoReconnect=true&characterEncoding=UTF-8&characterSetResults=UTF-8";
 	private Connection conn = null;
+	private Statement st;
+	private ResultSet rs;
+	private String query;
 
-	public SubjectDAO() {
-
+	public void openDBConnection() {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(url, "root", "");
+			st = conn.createStatement();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(SubjectDAO) Error connecting to database.\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	public ArrayList<Subject> listSubjects() {
 		ArrayList<Subject> subjectList = new ArrayList<Subject>();
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			Statement st = conn.createStatement();
-			ResultSet srs = st.executeQuery("SELECT * FROM subjects");
-			while (srs.next()) {
+			openDBConnection();
+			query = "SELECT * FROM subjects";
+			rs = st.executeQuery(query);
+			while (rs.next()) {
 				Subject subject = new Subject();
-				subject.setID(srs.getInt("subjID"));
-				subject.setSubject(srs.getString("description"));
-				subject.setUnits(srs.getDouble("units"));
-				subject.setYrLvl(srs.getInt("yr_level"));
-				subject.setSemester(srs.getString("semester"));
+				subject.setID(rs.getInt("subjID"));
+				subject.setSubject(rs.getString("description"));
+				subject.setUnits(rs.getDouble("units"));
+				subject.setYrLvl(rs.getInt("yr_level"));
+				subject.setSemester(rs.getString("semester"));
 				subjectList.add(subject);
 			}
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Subject DAO) Error retrieving subject list:\n" + e.getMessage() + "\n",
-					"Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"(Subject DAO) Error retrieving subject list:\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
 		}
 		return subjectList;
 	}
@@ -48,12 +58,11 @@ public class SubjectDAO {
 	public int countSubjects() {
 		int count = 0;
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			Statement st = conn.createStatement();
-			ResultSet srs = st.executeQuery("SELECT Count(*) FROM subjects");
-			while (srs.next()) {
-				count = srs.getInt(1);
+			openDBConnection();
+			query = "SELECT Count(*) FROM subjects";
+			rs = st.executeQuery(query);
+			while (rs.next()) {
+				count = rs.getInt(1);
 			}
 			conn.close();
 		} catch (Exception e) {
@@ -65,63 +74,62 @@ public class SubjectDAO {
 
 	public void addSubject(String subject, double units, int yr_lvl, Object semester) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			String query = "INSERT INTO subjects(description, units, yr_level, semester) VALUES ('" + subject + "', " + units + ", " + yr_lvl + ", '" + semester + "')";
+			openDBConnection();
+			query = "INSERT INTO subjects(description, units, yr_level, semester) VALUES ('" + subject + "', " + units
+					+ ", " + yr_lvl + ", '" + semester + "')";
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.execute();
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Subject DAO) Error adding subject:\n" + e.getMessage() + "\n", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "(Subject DAO) Error adding subject:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
-	public void editSubject(int id, String subject, double units, int yr_lvl, Object semester) {
+	public void editSubject(int sID, String subject, double units, int yr_lvl, Object semester) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			String query = "UPDATE subjects SET description='" + subject + "', units=" + units + ", yr_level= " + yr_lvl + ", semester= '" + semester + "' WHERE subjID=" + id;
+			openDBConnection();
+			query = "UPDATE subjects SET description='" + subject + "', units=" + units + ", yr_level= " + yr_lvl
+					+ ", semester= '" + semester + "' WHERE subjID=" + sID;
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.executeUpdate();
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Subject DAO) Error editing subject:\n" + e.getMessage() + "\n", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "(Subject DAO) Error editing subject:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
-	public void deleteSubject(int id) {
+	public void deleteSubject(int sID) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			String query = "Delete from subjects where subjID=" + id;
+			openDBConnection();
+			query = "Delete from subjects where subjID=" + sID;
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.executeUpdate();
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Subject DAO) Error deleting subject:\n" + e.getMessage() + "\n", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "(Subject DAO) Error deleting subject:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	public ArrayList<Subject> getLabSubjects() {
 		ArrayList<Subject> subjectList = new ArrayList<Subject>();
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			Statement st = conn.createStatement();
-			ResultSet srs = st.executeQuery("SELECT * FROM `subjects` WHERE description LIKE '%Lab'");
-			while (srs.next()) {
+			openDBConnection();
+			query = "SELECT * FROM `subjects` WHERE description LIKE '%Lab'";
+			rs = st.executeQuery(query);
+			while (rs.next()) {
 				Subject subject = new Subject();
-				subject.setID(srs.getInt("subjID"));
-				subject.setSubject(srs.getString("description"));
-				subject.setUnits(srs.getDouble("units"));
+				subject.setID(rs.getInt("subjID"));
+				subject.setSubject(rs.getString("description"));
+				subject.setUnits(rs.getDouble("units"));
 				subjectList.add(subject);
 			}
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Subject DAO) Error retrieving laboratory courses:\n" + e.getMessage() + "\n", "Error",
+			JOptionPane.showMessageDialog(null,
+					"(Subject DAO) Error retrieving laboratory courses:\n" + e.getMessage() + "\n", "Error",
 					JOptionPane.ERROR_MESSAGE);
 		}
 		return subjectList;
@@ -129,18 +137,17 @@ public class SubjectDAO {
 
 	public int getID(String name) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			Statement st = conn.createStatement();
-			ResultSet srs = st.executeQuery("SELECT subjID from subjects where description ='" + name + "'");
-			while (srs.next()) {
-				id = srs.getInt("subjID");
+			openDBConnection();
+			query = "SELECT subjID from subjects where description ='" + name + "'";
+			rs = st.executeQuery(query);
+			while (rs.next()) {
+				sID = rs.getInt("subjID");
 			}
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Subject DAO) Error retrieving subject ID:\n" + e.getMessage() + "\n", "Error",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "(Subject DAO) Error retrieving subject ID:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
 		}
-		return id;
+		return sID;
 	}
 }

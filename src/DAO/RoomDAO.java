@@ -13,27 +13,38 @@ import Graph.Models.Building;
 import Graph.Models.Room;
 
 public class RoomDAO {
-	private int id;
-	private ArrayList<Room> roomlist = new ArrayList<Room>();
+	private int rID;
 	private Connection conn = null;
-	private String url = "jdbc:mysql://127.0.0.1:3306/absked";
+	private String url = "jdbc:mysql://127.0.0.1:3300/absked";
+	private Statement st;
+	private ResultSet rs;
+	private String query;
 
-	public ArrayList<Room> getAllRooms() {
+	public void openDBConnection() {
 		try {
-
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(url, "root", "");
-			Statement st = conn.createStatement();
-			ResultSet srs = st.executeQuery("SELECT * FROM rooms");
+			st = conn.createStatement();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(RoomDAO) Error connecting to database.\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
 
-			while (srs.next()) {
+	public ArrayList<Room> getAllRooms() {
+		ArrayList<Room> roomlist = new ArrayList<Room>();
+		try {
+			openDBConnection();
+			query = "SELECT * FROM rooms";
+			rs = st.executeQuery(query);
+			while (rs.next()) {
 				Room room = new Room();
-				Building b = new Building(srs.getInt("buildingID"));
-				room.setID(srs.getInt("roomID"));
+				Building b = new Building(rs.getInt("buildingID"));
+				room.setID(rs.getInt("roomID"));
 				room.setBuilding(b.getBname());
-				room.setName(srs.getString("room_desc"));
-				room.setType(srs.getString("type"));
-				room.setCapacity(srs.getInt("capacity"));
+				room.setName(rs.getString("room_desc"));
+				room.setType(rs.getString("type"));
+				room.setCapacity(rs.getInt("capacity"));
 				roomlist.add(room);
 			}
 			conn.close();
@@ -46,27 +57,25 @@ public class RoomDAO {
 
 	public int getID(String name) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			Statement st = conn.createStatement();
-			ResultSet srs = st.executeQuery("SELECT roomID from rooms where room_desc ='" + name + "'");
-			while (srs.next()) {
-				id = srs.getInt("roomID");
+			openDBConnection();
+			query = "SELECT roomID from rooms where room_desc ='" + name + "'";
+			rs = st.executeQuery(query);
+			while (rs.next()) {
+				rID = rs.getInt("roomID");
 			}
 			conn.close();
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "(Room DAO) Error retrieving room ID:\n" + e.getMessage() + "\n",
 					"Error", JOptionPane.ERROR_MESSAGE);
 		}
-		return id;
+		return rID;
 	}
 
 	public void addRoom(String name, int b, String type, int capacity) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			String query = "INSERT INTO rooms(buildingID, room_desc, type, capacity) VALUES (" + b + ",'" + name + "','"
-					+ type + "'," + capacity + ")";
+			openDBConnection();
+			query = "INSERT INTO rooms(buildingID, room_desc, type, capacity) VALUES (" + b + ",'" + name + "','" + type
+					+ "'," + capacity + ")";
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.executeUpdate();
 			conn.close();
@@ -76,12 +85,11 @@ public class RoomDAO {
 		}
 	}
 
-	public void editRoom(int id, String name, int b, String type, int capacity) {
+	public void editRoom(int rID, String name, int b, String type, int capacity) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			String query = "UPDATE rooms SET room_desc='" + name + "', buildingID=" + b + ", type='" + type
-					+ "', capacity=" + capacity + " WHERE roomID=" + id;
+			openDBConnection();
+			query = "UPDATE rooms SET room_desc='" + name + "', buildingID=" + b + ", type='" + type + "', capacity="
+					+ capacity + " WHERE roomID=" + rID;
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.executeUpdate();
 			conn.close();
@@ -91,11 +99,10 @@ public class RoomDAO {
 		}
 	}
 
-	public void deleteRoom(int id) {
+	public void deleteRoom(int rID) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			String query = "Delete from rooms WHERE roomID=" + id;
+			openDBConnection();
+			query = "Delete from rooms WHERE roomID=" + rID;
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.executeUpdate();
 			conn.close();
@@ -108,14 +115,11 @@ public class RoomDAO {
 	public int countRooms() {
 		int count = 0;
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-
-			String url = "jdbc:mysql://localhost:3306/absked";
-			Connection conn = DriverManager.getConnection(url, "root", "");
-			Statement st = conn.createStatement();
-			ResultSet srs = st.executeQuery("SELECT Count(*) FROM rooms");
-			while (srs.next()) {
-				count = srs.getInt(1);
+			openDBConnection();
+			query = "SELECT Count(*) FROM rooms";
+			rs = st.executeQuery(query);
+			while (rs.next()) {
+				count = rs.getInt(1);
 			}
 			conn.close();
 		} catch (Exception e) {
@@ -126,20 +130,20 @@ public class RoomDAO {
 	}
 
 	public ArrayList<Room> roomCanHold(int class_size) {
+		ArrayList<Room> roomlist = new ArrayList<Room>();
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			Statement st = conn.createStatement();
-			ResultSet srs = st.executeQuery("SELECT * FROM rooms where capacity >= " + class_size);
+			openDBConnection();
+			query = "SELECT * FROM rooms where capacity >= " + class_size;
+			rs = st.executeQuery(query);
 
-			while (srs.next()) {
+			while (rs.next()) {
 				Room room = new Room();
-				Building b = new Building(srs.getInt("buildingID"));
-				room.setID(srs.getInt("roomID"));
+				Building b = new Building(rs.getInt("buildingID"));
+				room.setID(rs.getInt("roomID"));
 				room.setBuilding(b.getBname());
-				room.setName(srs.getString("room_desc"));
-				room.setType(srs.getString("type"));
-				room.setCapacity(srs.getInt("capacity"));
+				room.setName(rs.getString("room_desc"));
+				room.setType(rs.getString("type"));
+				room.setCapacity(rs.getInt("capacity"));
 				roomlist.add(room);
 			}
 			conn.close();
@@ -151,20 +155,20 @@ public class RoomDAO {
 	}
 
 	public ArrayList<Room> getLecRooms() {
+		ArrayList<Room> roomlist = new ArrayList<Room>();
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			Statement st = conn.createStatement();
-			ResultSet srs = st.executeQuery("SELECT * FROM rooms where type='Lecture'");
+			openDBConnection();
+			query = "SELECT * FROM rooms where type='Lecture'";
+			rs = st.executeQuery(query);
 
-			while (srs.next()) {
+			while (rs.next()) {
 				Room room = new Room();
-				Building b = new Building(srs.getInt("buildingID"));
-				room.setID(srs.getInt("roomID"));
+				Building b = new Building(rs.getInt("buildingID"));
+				room.setID(rs.getInt("roomID"));
 				room.setBuilding(b.getBname());
-				room.setName(srs.getString("room_desc"));
-				room.setType(srs.getString("type"));
-				room.setCapacity(srs.getInt("capacity"));
+				room.setName(rs.getString("room_desc"));
+				room.setType(rs.getString("type"));
+				room.setCapacity(rs.getInt("capacity"));
 				roomlist.add(room);
 			}
 			conn.close();
@@ -174,21 +178,22 @@ public class RoomDAO {
 		}
 		return roomlist;
 	}
-	public ArrayList<Room> getLabRooms() {
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			Statement st = conn.createStatement();
-			ResultSet srs = st.executeQuery("SELECT * FROM rooms where type='Laboratory'");
 
-			while (srs.next()) {
+	public ArrayList<Room> getLabRooms() {
+		ArrayList<Room> roomlist = new ArrayList<Room>();
+		try {
+			openDBConnection();
+			query = "SELECT * FROM rooms where type='Laboratory'";
+			rs = st.executeQuery(query);
+
+			while (rs.next()) {
 				Room room = new Room();
-				Building b = new Building(srs.getInt("buildingID"));
-				room.setID(srs.getInt("roomID"));
+				Building b = new Building(rs.getInt("buildingID"));
+				room.setID(rs.getInt("roomID"));
 				room.setBuilding(b.getBname());
-				room.setName(srs.getString("room_desc"));
-				room.setType(srs.getString("type"));
-				room.setCapacity(srs.getInt("capacity"));
+				room.setName(rs.getString("room_desc"));
+				room.setType(rs.getString("type"));
+				room.setCapacity(rs.getInt("capacity"));
 				roomlist.add(room);
 			}
 			conn.close();

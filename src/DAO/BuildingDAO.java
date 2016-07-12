@@ -12,60 +12,73 @@ import Graph.Models.Building;
 
 public class BuildingDAO {
 
-	private String bname;
-	private int id;
-	private String url = "jdbc:mysql://127.0.0.1:3306/absked";
+	private String bname, query;
+	private int bID;
+	private String url = "jdbc:mysql://127.0.0.1:3300/absked";
 	private Connection conn = null;
-
-	public String getBname(int id) {
+	private Statement st;
+	private ResultSet rs;
+	
+	public void openDBConnection(){
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(url, "root", "");
-			Statement st = conn.createStatement();
-			ResultSet srs = st.executeQuery("SELECT bname FROM buildings WHERE buildingID =" + id);
-			while (srs.next()) {
-				bname = srs.getString("bname");
+			st = conn.createStatement();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(FacultyDAO) Error connecting to database.\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	public String getBname(int bID) {
+		try {
+			openDBConnection();
+			query = "SELECT bname FROM buildings WHERE buildingID =" + bID;
+			rs = st.executeQuery(query);
+			while (rs.next()) {
+				bname = rs.getString("bname");
 			}
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Buidling DAO) Get Building name Error:\n" + e.getMessage() + "\n", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "(Buidling DAO) Get Building name Error:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 		return bname;
 	}
 
 	public int getID(String bname) {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			Statement st = conn.createStatement();
-			ResultSet srs = st.executeQuery("SELECT buildingID FROM buildings WHERE bname ='" + bname + "'");
-			while (srs.next()) {
-				id = srs.getInt("buildingID");
+			openDBConnection();
+			query = "SELECT buildingID FROM buildings WHERE bname ='" + bname + "'";
+			rs = st.executeQuery(query);
+			while (rs.next()) {
+				bID = rs.getInt("buildingID");
 			}
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Buidling DAO) Get Building ID Error:\n" + e.getMessage() + "\n", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "(Buidling DAO) Get Building ID Error:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
 		}
-		return id;
+		return bID;
 	}
 
 	public ArrayList<Building> buildingList() {
 		ArrayList<Building> buildingList = new ArrayList<Building>();
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(url, "root", "");
-			Statement st = conn.createStatement();
-			ResultSet srs = st.executeQuery("SELECT * FROM buildings");
-			while (srs.next()) {
+			openDBConnection();
+			query = "SELECT * FROM buildings";
+			rs = st.executeQuery(query);
+			while (rs.next()) {
 				Building b = new Building();
-				b.setID(srs.getInt("buildingID"));
-				b.setBname(srs.getString("bname"));
-				b.setLocation(srs.getString("location"));
+				b.setID(rs.getInt("buildingID"));
+				b.setBname(rs.getString("bname"));
+				b.setLocation(rs.getString("location"));
 				buildingList.add(b);
 			}
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Building DAO) Error retrieving building list" + e.getMessage() + "\n", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "(Building DAO) Error retrieving building list" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 		return buildingList;
 	}
