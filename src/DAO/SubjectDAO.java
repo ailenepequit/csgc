@@ -14,7 +14,7 @@ import Graph.Models.Subject;
 public class SubjectDAO {
 
 	private int sID;
-	private String url = "jdbc:mysql://localhost:3300/absked?zeroDateTimeBehavior=convertToNull&autoReconnect=true&characterEncoding=UTF-8&characterSetResults=UTF-8";
+	private String url = "jdbc:mysql://localhost:3306/absked?zeroDateTimeBehavior=convertToNull&autoReconnect=true&characterEncoding=UTF-8&characterSetResults=UTF-8";
 	private Connection conn = null;
 	private Statement st;
 	private ResultSet rs;
@@ -31,11 +31,16 @@ public class SubjectDAO {
 		}
 	}
 
-	public ArrayList<Subject> listSubjects() {
+	public ArrayList<Subject> listSubjects(String cond) {
+		if(cond.equals("All"))
+			query = "SELECT * FROM subjects";
+		else{
+			String con = " where semester='"+ cond +"'";
+			query = "SELECT * FROM subjects" + con;
+		}
 		ArrayList<Subject> subjectList = new ArrayList<Subject>();
 		try {
 			openDBConnection();
-			query = "SELECT * FROM subjects";
 			rs = st.executeQuery(query);
 			while (rs.next()) {
 				Subject subject = new Subject();
@@ -57,6 +62,7 @@ public class SubjectDAO {
 
 	public int countSubjects() {
 		int count = 0;
+		
 		try {
 			openDBConnection();
 			query = "SELECT Count(*) FROM subjects";

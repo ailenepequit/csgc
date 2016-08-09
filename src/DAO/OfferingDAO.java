@@ -13,7 +13,7 @@ import Graph.Models.Offering;
 
 public class OfferingDAO {
 
-	private String url = "jdbc:mysql://localhost:3300/absked?zeroDateTimeBehavior=convertToNull&autoReconnect=true&characterEncoding=UTF-8&characterSetResults=UTF-8";
+	private String url = "jdbc:mysql://localhost:3306/absked?zeroDateTimeBehavior=convertToNull&autoReconnect=true&characterEncoding=UTF-8&characterSetResults=UTF-8";
 	private Connection conn;
 	private Statement st;
 	private ResultSet rs;

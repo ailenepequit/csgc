@@ -14,7 +14,7 @@ public class BuildingDAO {
 
 	private String bname, query;
 	private int bID;
-	private String url = "jdbc:mysql://127.0.0.1:3300/absked";
+	private String url = "jdbc:mysql://localhost:3306/absked";
 	private Connection conn = null;
 	private Statement st;
 	private ResultSet rs;
