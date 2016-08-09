@@ -27,7 +27,7 @@ import Graph.Models.Subject;
 public class SubjectPanel extends JPanel {
 
 	Subject subject = new Subject();
-	ArrayList<Subject> subjectlist = subject.subjectList();
+	ArrayList<Subject> subjectlist;
 	private JTable subjectTable;
 	private JTextField descriptionField;
 	private JTextField unitsField;
@@ -36,19 +36,19 @@ public class SubjectPanel extends JPanel {
 	private int subjectID;
 	Formatter format = new Formatter();
 	DefaultTableModel subjectModel;
+	Object[][] subject_data;
+	String[] subject_columns;
 	
 	public SubjectPanel() {
 		setBackground(Color.WHITE);
-		Object[][] subject_data = new Object[subjectlist.size()][];
+		subjectlist = subject.subjectList("All");
+		subject_data = new Object[subjectlist.size()][];
 		for (int i = 0; i < subjectlist.size(); i++) {
 			subject_data[i] = subjectlist.get(i).toObjectArray();
 		}
-		String[] subject_columns = new String[] { "Id", "Decsription", "Units", "Yr Level", "Semester" };
-		subjectModel = new DefaultTableModel(subject_data, subject_columns) {
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		};
+		subject_columns = new String[] { "Id", "Decsription", "Units", "Yr Level", "Semester" };
+		
+		subjectModel = new DefaultTableModel(subject_data, subject_columns);
 
 		String[] sem = { "1st", "2nd", "S" };
 
@@ -178,7 +178,26 @@ public class SubjectPanel extends JPanel {
 		JLabel lblSubjectSemester = new JLabel("Semester");
 		lblSubjectSemester.setBounds(31, 204, 71, 14);
 		format.labelFormat(lblSubjectSemester);
-
+		
+		String[] s = {"All", "1st", "2nd", "S"};
+		JComboBox comboBox = new JComboBox(s);
+		comboBox.setBounds(481, 19, 73, 30);
+		comboBox.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				String sem = comboBox.getSelectedItem().toString();
+				subjectlist = subject.subjectList(sem);
+				subject_data = new Object[subjectlist.size()][];
+				for (int i = 0; i < subjectlist.size(); i++) {
+					subject_data[i] = subjectlist.get(i).toObjectArray();
+				}
+				subjectModel = new DefaultTableModel(subject_data, subject_columns);
+				subjectTable.setModel(subjectModel);
+				//subjectTable.getUpdateSelectionOnSort();
+				//subjectTable.repaint();
+			}
+		});
+		
+		
 		descriptionField = new JTextField();
 		descriptionField.setBounds(107, 65, 230, 20);
 		descriptionField.setColumns(10);
@@ -202,6 +221,7 @@ public class SubjectPanel extends JPanel {
 		add(btnDeleteSubject);
 		add(btnViewSubjectTimetable);
 		add(lblSubjectList);
+		add(comboBox);
 		add(subjectFormPanel);
 		subjectFormPanel.add(lblSubjectInformationDetails);
 		subjectFormPanel.add(lblDescription);

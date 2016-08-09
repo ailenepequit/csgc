@@ -2,7 +2,6 @@ package Graph.Views;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -18,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -37,30 +37,29 @@ public class RoomPanel extends JPanel {
 	private JTextField roomField, capacityField;
 	private JComboBox buildingComboBox, typeComboBox;
 	Formatter format = new Formatter();
+	private JComboBox comboBox;
+	Object[][] room_data;
+
+	Room room = new Room();
+	ArrayList<Room> roomlist = room.roomList("All");
 	
 	public RoomPanel() {
 		setBackground(Color.WHITE);
 		Building b = new Building();
-		Room room = new Room();
 		DefaultComboBoxModel<String> cm = new DefaultComboBoxModel<String>();
 		ArrayList<Building> blist = b.buildingList();
-		ArrayList<Room> roomlist = room.roomList();
+		
 
 		String[] room_columns = new String[] { "Id", "Building", "Name", "Type", "Capacity" };
 
-		Object[][] room_data = new Object[roomlist.size()][];
+		room_data = new Object[roomlist.size()][];
 		for (int i = 0; i < roomlist.size(); i++) {
 			room_data[i] = roomlist.get(i).toObjectArray();
 		}
 		for (int i = 0; i < blist.size(); i++) {
 			cm.addElement(blist.get(i).getBname());
 		}
-		roomModel = new DefaultTableModel(room_data, room_columns) {
-			public boolean isCellEditable(int row, int column) {
-				// all cells false
-				return false;
-			}
-		};
+		roomModel = new DefaultTableModel(room_data, room_columns);
 
 		String[] type = { "Laboratory", "Lecture" };
 
@@ -157,7 +156,7 @@ public class RoomPanel extends JPanel {
 		;
 		format.tableFormat(roomTable);
 		roomTable.setBounds(26, 92, 446, 462);
-
+		roomTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		JScrollPane roomListScrollPane = new JScrollPane();
 		roomListScrollPane.setBounds(20, 68, 516, 450);
 		roomListScrollPane.setViewportView(roomTable);
@@ -181,8 +180,24 @@ public class RoomPanel extends JPanel {
 
 		JLabel lblRoomList = new JLabel("Room List");
 		lblRoomList.setHorizontalAlignment(SwingConstants.CENTER);
-		lblRoomList.setBounds(234, 26, 111, 14);
+		lblRoomList.setBounds(219, 27, 111, 14);
 
+		String[] r = {"All", "Laboratory", "Lecture"};
+		comboBox = new JComboBox(r);
+		comboBox.setBounds(425, 19, 111, 30);
+		comboBox.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				String t = comboBox.getSelectedItem().toString();
+				roomlist = room.roomList(t);
+				room_data = new Object[roomlist.size()][];
+				for (int i = 0; i < roomlist.size(); i++) {
+					room_data[i] = roomlist.get(i).toObjectArray();
+				}
+				roomModel = new DefaultTableModel(room_data, room_columns);
+				roomTable.setModel(roomModel);
+			}
+		});
+		
 		JPanel roomFormPanel = new JPanel();
 		roomFormPanel.setBounds(590, 68, 382, 409);
 		roomFormPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
@@ -233,6 +248,7 @@ public class RoomPanel extends JPanel {
 		add(roomListScrollPane);
 		add(btnViewRoomTimetable);
 		add(btnUpdateRoom);
+		add(comboBox);
 		add(roomFormPanel);
 		roomFormPanel.add(lblBuilding);
 		roomFormPanel.add(lblRoomName);

@@ -2,7 +2,6 @@ package Graph.Views;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import Graph.Controllers.WindowController;
@@ -17,7 +16,6 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 
@@ -27,25 +25,26 @@ import javax.swing.ImageIcon;
 
 @SuppressWarnings("serial")
 public class HomeView extends JFrame {
-	
+
 	private JPanel contentPane, sidebarPanel;
 	private JButton homeBtn, subjectsBtn, facultyBtn, roomsBtn, visualizationBtn;
 
-	GraphPanel graphPanel;
+	static GraphPanel graphPanel;
+	VisualizationPanel vizPanel;
 	RoomPanel roomsPanel;
-	SubjectPanel  subjectsPanel;
+	SubjectPanel subjectsPanel;
 	FacultyPanel facultyPanel;
 	static OfferingPanel offeringPanel;
 	static OfferingFormPanel formPanel;
-	
+
 	Offering offering = new Offering();
 	Subject subject = new Subject();
 	Room room = new Room();
 	Faculty faculty = new Faculty();
-	
-	ArrayList<Subject> subjectList = subject.subjectList();
+
+	ArrayList<Subject> subjectList = subject.subjectList("All");
 	int N = subjectList.size();
-	
+
 	WindowController w;
 	Formatter format = new Formatter();
 
@@ -64,6 +63,7 @@ public class HomeView extends JFrame {
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setTitle("Home");
+
 	}
 
 	public void components() {
@@ -75,14 +75,24 @@ public class HomeView extends JFrame {
 		roomsPanel = new RoomPanel();
 		subjectsPanel = new SubjectPanel();
 		facultyPanel = new FacultyPanel();
-		graphPanel = new GraphPanel(this);
-		graphPanel.setLayout(new BorderLayout());
+		graphPanel = new GraphPanel(this.getGraphics());
+		vizPanel = new VisualizationPanel();
+
+		contentPane.add(graphPanel);
 		contentPane.add(offeringPanel);
 		contentPane.add(formPanel);
 		contentPane.add(roomsPanel);
 		contentPane.add(subjectsPanel);
 		contentPane.add(facultyPanel);
-		contentPane.add(graphPanel);
+
+		contentPane.add(vizPanel);
+		vizPanel.setVisible(false);
+		addEdges();
+	}
+	
+	public void graph(){
+		graphPanel.update();
+		graphPanel.repaint();
 	}
 
 	public void headerComponents() {
@@ -151,7 +161,7 @@ public class HomeView extends JFrame {
 
 		homeBtn = new JButton("   Home");
 		sidebarButtonFormat(homeBtn, format.imagesPath + "homeicon.png");
-		homeBtn.setBounds(0, 0, 242, 40);
+		homeBtn.setBounds(0, 0, 242, 50);
 		homeBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setSideBarButtonsUnselectedFormat();
@@ -163,7 +173,7 @@ public class HomeView extends JFrame {
 
 		subjectsBtn = new JButton("   Courses");
 		sidebarButtonFormat(subjectsBtn, format.imagesPath + "scholarly.png");
-		subjectsBtn.setBounds(0, 38, 242, 40);
+		subjectsBtn.setBounds(0, 49, 242, 50);
 		subjectsBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setSideBarButtonsUnselectedFormat();
@@ -174,7 +184,7 @@ public class HomeView extends JFrame {
 		});
 
 		facultyBtn = new JButton("   Faculty");
-		facultyBtn.setBounds(0, 76, 242, 40);
+		facultyBtn.setBounds(0, 98, 242, 50);
 		sidebarButtonFormat(facultyBtn, format.imagesPath + "faculty.png");
 		facultyBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -186,7 +196,7 @@ public class HomeView extends JFrame {
 		});
 
 		roomsBtn = new JButton("   Rooms");
-		roomsBtn.setBounds(0, 114, 242, 40);
+		roomsBtn.setBounds(0, 147, 242, 50);
 		sidebarButtonFormat(roomsBtn, format.imagesPath + "chair.png");
 		roomsBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -198,15 +208,18 @@ public class HomeView extends JFrame {
 		});
 
 		visualizationBtn = new JButton("   Visualization");
-		visualizationBtn.setBounds(0, 152, 242, 40);
+		visualizationBtn.setBounds(0, 196, 242, 50);
 		sidebarButtonFormat(visualizationBtn, format.imagesPath + "graph.png");
 		visualizationBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setSideBarButtonsUnselectedFormat();
 				sideBarButtonSelected(visualizationBtn);
 				setPanelsVisibleToFalse();
-				graphPanel.setVisible(true);
-				graphPanel.addEdges();
+				//graphPanel.setVisible(true);
+//				graphPanel.update();
+//				graphPanel.repaint();
+				vizPanel.setVisible(true);
+				vizPanel.setGraphData(subject.count(), room.count(), faculty.count());
 			}
 		});
 
@@ -218,10 +231,33 @@ public class HomeView extends JFrame {
 		sidebarPanel.add(visualizationBtn);
 	}
 
+	public void addEdges() {
+		String yr = "";
+		for (int i = 0; i < N; i++) {
+			int yrLvl = subjectList.get(i).getYrLvl();
+			switch (yrLvl) {
+			case 1:
+				yr = "1st yr";
+				break;
+			case 2:
+				yr = "2nd yr";
+				break;
+			case 3:
+				yr = "3rd yr";
+				break;
+			case 4:
+				yr = "4th yr";
+				break;
+			}
+			graphPanel.addEdge(subjectList.get(i).getSubject(), yr, yrLvl);
+			vizPanel.logArea.append(graphPanel.display(subjectList.get(i).getSubject(), yr, yrLvl));
+		}
+	}
+
 	public void sidebarButtonFormat(JButton button, String icon) {
 		button.setIcon(new ImageIcon(icon));
 		button.setHorizontalAlignment(SwingConstants.LEADING);
-		button.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		button.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		button.setForeground(Color.WHITE);
 		button.setBackground(new Color(51, 51, 51));
 		button.setFocusPainted(false);
@@ -229,30 +265,31 @@ public class HomeView extends JFrame {
 				BorderFactory.createEmptyBorder(10, 20, 10, 10)));
 	}
 
-	public void sideBarButtonSelected(JButton btn){
-		btn.setFont(new Font("SansSerif", Font.BOLD, 13));
+	public void sideBarButtonSelected(JButton btn) {
+		btn.setFont(new Font("SansSerif", Font.BOLD, 16));
 		btn.setForeground(new Color(46, 139, 87));
 	}
-	
-	public void setSideBarButtonsUnselectedFormat(){
+
+	public void setSideBarButtonsUnselectedFormat() {
 		sideBarButtonUnselected(homeBtn);
 		sideBarButtonUnselected(subjectsBtn);
 		sideBarButtonUnselected(facultyBtn);
 		sideBarButtonUnselected(roomsBtn);
 		sideBarButtonUnselected(visualizationBtn);
 	}
-	
-	public void sideBarButtonUnselected(JButton button){
-		button.setFont(new Font("SansSerif", Font.PLAIN, 12));
+
+	public void sideBarButtonUnselected(JButton button) {
+		button.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		button.setForeground(Color.WHITE);
 	}
-	
-	public void setPanelsVisibleToFalse(){
+
+	public void setPanelsVisibleToFalse() {
 		offeringPanel.setVisible(false);
 		formPanel.setVisible(false);
 		roomsPanel.setVisible(false);
 		subjectsPanel.setVisible(false);
 		facultyPanel.setVisible(false);
 		graphPanel.setVisible(false);
+		vizPanel.setVisible(false);
 	}
 }

@@ -27,11 +27,11 @@ public class OfferingFormPanel extends JPanel {
 
 	private int row, offeringID;
 	private JPanel panel;
-	private JTextField slotsField;
-	private JComboBox syComboBox, semComboBox, subjectComboBox, facultyComboBox, roomComboBox, dayComboBox, startPeriod,
+	JTextField slotsField;
+	JComboBox syComboBox, semComboBox, subjectComboBox, facultyComboBox, roomComboBox, dayComboBox, startPeriod,
 			endPeriod;
 	JButton btnAddOffering, btnEditOffering;
-	private JSpinner startHrSpinner, endHrSpinner, startMinSpinner, endMinSpinner;
+	JSpinner startHrSpinner, endHrSpinner, startMinSpinner, endMinSpinner;
 	JLabel lblOffering;
 
 	DefaultComboBoxModel<String> fac = new DefaultComboBoxModel<String>();
@@ -47,8 +47,8 @@ public class OfferingFormPanel extends JPanel {
 	Faculty faculty = new Faculty();
 
 	ArrayList<Offering> courselist = offering.offeringsList();
-	ArrayList<Subject> subjectlist = subject.subjectList();
-	ArrayList<Room> roomlist = room.roomList();
+	ArrayList<Subject> subjectlist = subject.subjectList("All");
+	ArrayList<Room> roomlist = room.roomList("All");
 	ArrayList<Faculty> facultylist = faculty.facultyList();
 
 	Formatter format = new Formatter();
@@ -106,19 +106,20 @@ public class OfferingFormPanel extends JPanel {
 		
 	}
 
-	public void setFormData(int row, int offeringID, String sy, String sem, String startHr, String startMin,
-			String startP, String endHr, String endMin, String endP, String day, String subj, String fac, String slots,
+	public void setFormData(int row, int offeringID, String sy, String sem, Object startHr, Object startMin,
+			Object startP, Object endHr, Object endMin, Object endP, String day, String subj, String fac, String slots,
 			String room) {
 		this.row = row;
 		this.offeringID = offeringID;
 		syComboBox.setSelectedItem(sy);
 		semComboBox.setSelectedItem(sem);
-		startHrSpinner.setValue(startHr);
-		startMinSpinner.setValue(startMin);
+		System.out.println(startHr);
+//		startHrSpinner.setValue(startHr);
+//		startMinSpinner.setValue(startMin);
 		startPeriod.setSelectedItem(startP);
-		endHrSpinner.setValue(endHr);
-		endMinSpinner.setValue(endMin);
-		endPeriod.setSelectedItem(endP);
+//		endHrSpinner.setValue(endHr);
+//		endMinSpinner.setValue(endMin);
+//		endPeriod.setSelectedItem(endP);
 		dayComboBox.setSelectedItem(day);
 		subjectComboBox.setSelectedItem(subj);
 		facultyComboBox.setSelectedItem(fac);
@@ -126,14 +127,15 @@ public class OfferingFormPanel extends JPanel {
 		roomComboBox.setSelectedItem(room);
 	}
 
+
 	public void clearFields() {
 		syComboBox.setSelectedIndex(-1);
 		semComboBox.setSelectedIndex(-1);
-		startHrSpinner.setValue("");
-		startMinSpinner.setValue("");
+//		startHrSpinner.getModel().setValue("00");
+//		startMinSpinner.setValue(Integer.toString(00));
 		startPeriod.setSelectedIndex(-1);
-		endHrSpinner.setValue("");
-		endMinSpinner.setValue("");
+//		endHrSpinner.setValue(Integer.toString(00));
+//		endMinSpinner.setValue(Integer.toString(00));
 		endPeriod.setSelectedIndex(-1);
 		dayComboBox.setSelectedIndex(-1);
 		subjectComboBox.setSelectedIndex(-1);
@@ -148,7 +150,7 @@ public class OfferingFormPanel extends JPanel {
 		format.buttonFormat(btnAddOffering, format.addIcon);
 
 		btnEditOffering = new JButton("Update");
-		btnEditOffering.setBounds(121, 354, 91, 26);
+		btnEditOffering.setBounds(121, 354, 91, 30);
 		format.buttonFormat(btnEditOffering, format.updateIcon);
 
 		JButton btnCancel = new JButton("Cancel");

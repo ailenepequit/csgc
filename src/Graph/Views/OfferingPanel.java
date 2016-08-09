@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -48,9 +49,6 @@ public class OfferingPanel extends JPanel {
 	Faculty faculty = new Faculty();
 
 	ArrayList<Offering> courselist = offering.offeringsList();
-	ArrayList<Subject> subjectlist = subject.subjectList();
-	ArrayList<Room> roomlist = room.roomList();
-	ArrayList<Faculty> facultylist = faculty.facultyList();
 
 	Formatter format = new Formatter();
 
@@ -61,8 +59,8 @@ public class OfferingPanel extends JPanel {
 	
 	String sy = ""; //sy
 	String sem = ""; //sem
-	String startHr = "", startMin= "", startP= "";
-	String endHr= "", endMin="", endP="";
+	Object startHr = "", startMin= "", startP= "";
+	Object endHr= "", endMin="", endP="";
 	String day, selected_subj, selected_fac, slots, selected_room;
 	
 	public OfferingPanel() {
@@ -124,9 +122,9 @@ public class OfferingPanel extends JPanel {
 					sem = offeringModel.getValueAt(i, 2).toString(); //sem
 
 					if (offeringModel.getValueAt(i, 3) == null) {
-						startHr = "";
-						startMin = "";
-						startP = "";
+						startHr = -1;
+						startMin = -1;
+						startP = -1;
 					} else {
 						String start_time = offeringModel.getValueAt(i, 3).toString();
 						startHr = start_time.substring(0, 2);
@@ -134,9 +132,9 @@ public class OfferingPanel extends JPanel {
 						startP = start_time.substring(6, 8);
 					}
 					if (offeringModel.getValueAt(i, 4) == null) {
-						endHr = "";
-						endMin = "";
-						endP = "";
+						endHr = -1;
+						endMin = -1;
+						endP = -1;
 					} else {
 						String end_time = offeringModel.getValueAt(i, 4).toString();
 						endHr = end_time.substring(0, 2);
@@ -171,7 +169,7 @@ public class OfferingPanel extends JPanel {
 				}
 			}
 		});
-		scrollPane.setViewportView(table);
+		
 
 		JButton printBtn = new JButton("Print");
 		printBtn.setBounds(903, 12, 89, 30);
@@ -236,6 +234,21 @@ public class OfferingPanel extends JPanel {
 		JButton btnGenerateTimetable = new JButton("Generate Timetable");
 		btnGenerateTimetable.setBounds(159, 12, 163, 30);
 		format.buttonFormat(btnGenerateTimetable, format.imagesPath + "automate.png");
+		btnGenerateTimetable.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String[] sems = {"1st", "2nd", "S"};
+				String selected_sem = (String) JOptionPane.showInputDialog(OfferingPanel.this, 
+				        "Select Semester:",
+				        "Semester",
+				        JOptionPane.INFORMATION_MESSAGE, 
+				        null, 
+				        sems, 
+				        sems[0]);
+				scrollPane.setViewportView(table);
+				HomeView.graphPanel.subjectList = subject.subjectList(selected_sem);
+			}
+		});
+		
 
 		JButton btnExport = new JButton("Export");
 		btnExport.setBounds(783, 12, 104, 30);
