@@ -3,28 +3,29 @@ package Graph.Models;
 import java.util.ArrayList;
 
 import DAO.OfferingDAO;
-import DAO.RoomDAO;
 
 public class Offering {
 
 	private OfferingDAO offeringDAO = new OfferingDAO();
-	private RoomDAO r = new RoomDAO();
+	//private RoomDAO r = new RoomDAO();
+	//private Subject s = new Subject();
 	private Faculty f = new Faculty();
 	private int id, class_size, degree, color;
 	private String sy, sem, faculty, subject, start_time, end_time, days, room;
-	
-	public Offering(){
-		
+	RoomSize roomSize;
+
+	public Offering() {
+
 	}
-	
-	public void setID(int id){
+
+	public void setID(int id) {
 		this.id = id;
 	}
-	
-	public int getID(){
+
+	public int getID() {
 		return id;
 	}
-	
+
 	public void setSY(String sy) {
 		this.sy = sy;
 	}
@@ -81,7 +82,7 @@ public class Offering {
 	}
 
 	public void setClassSize(int class_size) {
-		this.class_size = class_size;
+		this.class_size = class_size; 
 	}
 
 	public int getClassSize() {
@@ -95,6 +96,7 @@ public class Offering {
 	public Object getEndTime() {
 		return end_time;
 	}
+
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
@@ -102,6 +104,7 @@ public class Offering {
 	public String getSubject() {
 		return subject;
 	}
+
 	public void setDegree(int degree) {
 		this.degree = degree;
 	}
@@ -118,24 +121,23 @@ public class Offering {
 		return color;
 	}
 
-	public ArrayList<Room> compatibleRooms() {
-		return r.roomCanHold(class_size);
-	}
-	
+//	public ArrayList<Room> compatibleRooms() {
+//		return r.roomCanHold(class_size);
+//	}
+
 	public void setRoom(int id, int room) {
 		offeringDAO.setRoom(id, room);
 	}
-	
 
-//	public String toString() {
-//		return this.subject + " " + this.faculty + " " + this.class_size + " " + this.timeslot;
-//	}
+	// public String toString() {
+	// return this.subject + " " + this.faculty + " " + this.class_size + " " +
+	// this.timeslot;
+	// }
 
 	public Object[] toTimetableArray() {
 		return new Object[] { new Integer(getID()), getSY(), getSemester(), getStartTime(), getEndTime(), getDay(),
 				getSubject(), getFaculty(), new Integer(getClassSize()), getRoom() };
 	}
-	
 
 	public ArrayList<Offering> courseListByRoom(int room) {
 		return offeringDAO.listOfferingsByRoom(room);
@@ -144,11 +146,11 @@ public class Offering {
 	public ArrayList<Offering> courseListByFaculty(int facID) {
 		return offeringDAO.listOfferingsByFaculty(facID);
 	}
-	
+
 	public ArrayList<Offering> courseListByUnits(String sign) {
 		return offeringDAO.listOfferingsByUnits(sign);
 	}
-	
+
 	public ArrayList<Offering> courseListWithFaculty() {
 		return offeringDAO.listCoursesWithFaculty();
 	}
@@ -175,7 +177,6 @@ public class Offering {
 		offeringDAO.deleteOffering(id);
 	}
 
-
 	public void deleteDaysched(int id) {
 		offeringDAO.deleteDaysched(id);
 	}
@@ -195,8 +196,36 @@ public class Offering {
 	public int getDaycode(String day) {
 		return offeringDAO.getDaycode(day);
 	}
-	
-	public void deleteAllDayscheds(){
+
+	public void deleteAllDayscheds() {
 		offeringDAO.deleteAllDayscheds();
 	}
+
+	public boolean fits(Room room) {
+		if (roomSize == RoomSize.LARGE && room.getSize() == RoomSize.MEDIUM)
+			return false;
+		return true;
+	}
+
+	public boolean fitsExactly(Room room) {
+		if (roomSize == room.getSize())
+			return true;
+		return false;
+	}
+
+	public boolean isTeachedBy(Faculty teacher) {
+		return (teacher.getID() == f.getFacID(faculty));
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) // Null references are not equal to this instance.
+			return false;
+		if (!o.getClass().equals(Offering.class)) // Neither are they instances
+													// of different classes
+			return false;
+		return (((Offering) o).getID() == this.id);
+	}
+	
+	
 }

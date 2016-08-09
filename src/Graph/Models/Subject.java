@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import DAO.SubjectDAO;
 
 public class Subject {
-	private int id, yr_lvl;
+	private int id, yr_lvl, class_size;
 	private double units;
 	private String subject, sem;
 	private SubjectDAO s = new SubjectDAO();
@@ -58,6 +58,14 @@ public class Subject {
 		return units;
 	}
 	
+	public void setClassSize(int class_size){
+		this.class_size = class_size;
+	}
+	
+	public int getClassSize(){
+		return class_size;
+	}
+	
 	public Object[] toObjectArray() {
 		return new Object[] { getID(), getSubject(), getUnits(), getYrLvl(), getSemester() };
 	}
@@ -81,7 +89,7 @@ public class Subject {
 		return s.getLabSubjects();
 	}
 	
-	public ArrayList<Subject> subjectList() {
-		return s.listSubjects();
+	public ArrayList<Subject> subjectList(String cond) {
+		return s.listSubjects(cond);
 	}
 }

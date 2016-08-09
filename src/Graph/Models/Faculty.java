@@ -12,9 +12,15 @@ public class Faculty {
 	String availStartTime, availEndTime;
 	Date bday;
 	FacultyDAO f = new FacultyDAO();
+	private boolean available[][];
 
 	public Faculty() {
-
+		available = new boolean[Slot.HOUR_19_21+1][Slot.SATURDAY+1];
+        for (int i = 0; i <=Slot.HOUR_19_21; i++) {
+            for (int j = 0; j <=Slot.SATURDAY; j++) {
+                available[i][j] = true;
+            }
+        }
 	}
 
 	public void setID(int id) {
@@ -129,5 +135,28 @@ public class Faculty {
 	public void addFaculty(String fname, String mname, String lname, String gender, String bday, String phone,
 			String address) {
 		f.addFaculty(fname, mname, lname, gender, bday, phone, address);
+	}
+
+	public boolean isAvailable(int day, int time) {
+		if (time == Slot.NULL_HOUR || day == Slot.NULL_DAY)
+			return false;
+		return available[time][day];
+	}
+	
+	public void setAvailable(int day, int time, boolean av) { available[time][day] = av; }
+
+
+	@Override
+	public int hashCode() {
+		return 31 * 1 + id;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) // Null references are not equal to this instance.
+			return false;
+		if (!obj.getClass().equals(Faculty.class)) // Neither are they instances of different classes
+			return false;
+		return (((Faculty) obj).getID() == this.id);
 	}
 }

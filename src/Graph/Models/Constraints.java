@@ -1,5 +1,7 @@
 package Graph.Models;
 
+import java.util.ArrayList;
+
 public class Constraints {
 
 	
@@ -7,17 +9,15 @@ public class Constraints {
 		{
 
 		}
-
-		public boolean CourseConflict()
-		{
-			return false;
-			//no same course in the same room at the same time
-			//data needed : name of courses.
-			//add edge if course[i].timeslot !
-		}
 		
-		public boolean TimeConflict()
+		//Course Conflict : Block Subject have different timeslots
+		public boolean isSameBlock(ArrayList<Subject> subject, int yr_lvl)
 		{
+			for(int i = 0; i < subject.size(); i++){
+				if(subject.get(i).getYrLvl() == yr_lvl){
+					return false;
+				}	
+			}
 			//check if courses have the same daycode
 			//no overlapping of timeslot
 			//data needed : timeslots of each course
@@ -31,19 +31,26 @@ public class Constraints {
 			return true;
 		}
 
-		public boolean RoomConflict()
+		//Timeslot-Room Conflict
+		public boolean isTimeRoomAvailable(ArrayList<Offering> offering, String timeslot)
 		{
-			return false;
+			for(int i = 0; i < offering.size(); i++){
+				if(offering.get(i).getTimeslot().equals(timeslot)){
+					return false;
+				}	
+			}
+			return true;
 			//no courses in the same room w/ same timeslot
 			//graph coloring
 		}
 
-		public boolean RoomCapacityConflict()
+		//Room Capacity Conflict
+		public boolean roomCanHoldClass(Room room, Subject subject)
 		{
-			return false;
-			//do not assign a room where room capacity < class size
-			//data needed : class size, room size
-			//if room.size >= class size -> return true
-			//else false
+			if(room.getCapacity() >= subject.getClassSize()){
+				return true;
+			}
+			else
+				return false;
 		}
 	}

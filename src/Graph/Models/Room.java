@@ -7,12 +7,12 @@ import DAO.RoomDAO;
 public class Room {
 
 	private int id, capacity;
+	private RoomSize roomSize;
 	private String name, type, building;
 	private int color;
 	private RoomDAO r = new RoomDAO();
 
 	public Room() {
-
 	}
 
 	public void setID(int id) {
@@ -71,10 +71,6 @@ public class Room {
 		return id;
 	}
 
-	public boolean isAvailable(boolean status) {
-		return status;
-	}
-
 	public String toString() {
 		return this.name + " " + this.building + " " + this.type + " " + this.capacity;
 	}
@@ -83,10 +79,15 @@ public class Room {
 		return new Object[] { getID(), getBuilding(), getName(), getType(), getCapacity() };
 	}
 
-	public ArrayList<Room> roomList() {
-		return r.getAllRooms();
+	public ArrayList<Room> roomList(String cond) {
+		if(cond.equals("All"))
+			return r.getAllRooms();
+		else if(cond.equals("Lecture"))
+			return r.getLecRooms();
+		else
+			return r.getLabRooms();
 	}
-
+	
 	public void addRoom(String name, int b, String type, int capacity) {
 		r.addRoom(name, b, type, capacity);
 	}
@@ -107,11 +108,53 @@ public class Room {
 		return r.roomCanHold(capacity);
 	}
 	
-	public ArrayList<Room> getLabRooms(){
-		return r.getLabRooms();
+//	public ArrayList<Room> getLabRooms(){
+//		return r.getLabRooms();
+//	}
+//	
+//	public ArrayList<Room> getLecRooms(){
+//		return r.getLecRooms();
+//	}
+	
+	public void setSize(RoomSize roomSize) {
+		if (Room.isValidRoomSize(roomSize))
+			this.roomSize = roomSize;
+	}
+
+	public RoomSize getSize() {
+		return roomSize;
 	}
 	
-	public ArrayList<Room> getLecRooms(){
-		return r.getLecRooms();
+	public int compareTo(Room o) {
+		if (o.getSize() == this.roomSize)
+			return 0;
+		else if (o.getSize() == RoomSize.MEDIUM && this.roomSize == RoomSize.LARGE)
+			return -1;
+		return 1;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) // Null references are not equal to this instance.
+			return false;
+		if (!o.getClass().equals(Room.class)) // Neither are they instances of
+												// different classes
+			return false;
+		return (((Room) o).getID()==(this.id));
+	}
+	
+	public static RoomSize getRoomSize(int room_size) {
+		if (room_size <= 20)
+			return RoomSize.SMALL;
+		if (room_size <= 30 && room_size > 20)
+			return RoomSize.MEDIUM;
+		if (room_size > 30)
+			return RoomSize.LARGE;
+		return RoomSize.NULL;
+	}
+
+	public static boolean isValidRoomSize(RoomSize roomSize) {
+		return (roomSize == RoomSize.LARGE || roomSize == RoomSize.MEDIUM);
+	}
+	
 }
