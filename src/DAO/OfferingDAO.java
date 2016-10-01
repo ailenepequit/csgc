@@ -34,16 +34,16 @@ public class OfferingDAO {
 		ArrayList<Offering> offeringList = new ArrayList<Offering>();
 		try {
 			openDBConnection();
-			query = "SELECT offerings.offerno, schoolyear, offerings.semester, TIME_FORMAT(dayscheds.start_time, '%h:%i %p') as st, TIME_FORMAT(dayscheds.end_time, '%h:%i %p') as et, days.dayname, subjects.description, faculty.fname, faculty.mname, faculty.lname, slots, room_desc from offerings inner join subjects on subjects.subjID = offerings.subjID left join dayscheds on dayscheds.offerno = offerings.offerno left join days on dayscheds.daycode = days.daycode inner join faculty on faculty.facID = offerings.facID left join rooms on rooms.roomID = offerings.roomID";
+			query = "SELECT offerID, sy, offerings.semester, TIME_FORMAT(start_time, '%h:%i %p') as st, TIME_FORMAT(end_time, '%h:%i %p') as et, day, subjects.description, faculty.fname, faculty.mname, faculty.lname, slots, room_desc from offerings inner join subjects on subjects.subjID = offerings.subjID inner join faculty on faculty.facID = offerings.facID left join rooms on rooms.roomID = offerings.roomID";
 			rs = st.executeQuery(query);
 			while (rs.next()) {
 				Offering offering = new Offering();
-				offering.setID(rs.getInt("offerno"));
-				offering.setSY(rs.getString("schoolyear"));
+				offering.setID(rs.getInt("offerID"));
+				offering.setSY(rs.getString("sy"));
 				offering.setSemester(rs.getString("offerings.semester"));
 				offering.setStartTime(rs.getString("st"));
 				offering.setEndTime(rs.getString("et"));
-				offering.setDay(rs.getString("dayname"));
+				offering.setDay(rs.getString("day"));
 				offering.setSubject(rs.getString("description"));
 				offering.setFaculty(rs.getString("fname"), rs.getString("mname"), rs.getString("lname"));
 				offering.setClassSize(rs.getInt("slots"));
@@ -59,41 +59,41 @@ public class OfferingDAO {
 		return offeringList;
 	}
 
-	public ArrayList<Offering> listOfferingsByRoom(int value) {
-		ArrayList<Offering> offeringList = new ArrayList<Offering>();
-		try {
-			openDBConnection();
-			query = "SELECT offerings.offerno, schoolyear, offerings.semester, TIME_FORMAT(dayscheds.start_time, '%h:%i %p') as st, TIME_FORMAT(dayscheds.end_time, '%h:%i %p') as et, days.dayname, subjects.description, faculty.fname, faculty.mname, faculty.lname, slots, room_desc from offerings inner join subjects on subjects.subjID = offerings.subjID left join dayscheds on dayscheds.offerno = offerings.offerno left join days on dayscheds.daycode = days.daycode inner join faculty on faculty.facID = offerings.facID left join rooms on rooms.roomID = offerings.roomID where rooms.roomID="
-					+ value;
-			rs = st.executeQuery(query);
-			while (rs.next()) {
-				Offering offering = new Offering();
-				offering.setID(rs.getInt("offerno"));
-				offering.setSY(rs.getString("schoolyear"));
-				offering.setSemester(rs.getString("offerings.semester"));
-				offering.setStartTime(rs.getString("st"));
-				offering.setEndTime(rs.getString("et"));
-				offering.setDay(rs.getString("dayname"));
-				offering.setSubject(rs.getString("description"));
-				offering.setFaculty(rs.getString("fname"), rs.getString("mname"), rs.getString("lname"));
-				offering.setClassSize(rs.getInt("slots"));
-				offering.setRoom(rs.getString("room_desc"));
-				offeringList.add(offering);
-			}
-			conn.close();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null,
-					"(Offering DAO) Error retrieving list of offerings by room:\n" + e.getMessage() + "\n", "Error",
-					JOptionPane.ERROR_MESSAGE);
-		}
-		return offeringList;
-	}
+//	public ArrayList<Offering> listOfferingsByRoom(int value) {
+//		ArrayList<Offering> offeringList = new ArrayList<Offering>();
+//		try {
+//			openDBConnection();
+//			query = "SELECT offerings.offerID, sy, offerings.semester, TIME_FORMAT(dayscheds.start_time, '%h:%i %p') as st, TIME_FORMAT(dayscheds.end_time, '%h:%i %p') as et, days.dayname, subjects.description, faculty.fname, faculty.mname, faculty.lname, slots, room_desc from offerings inner join subjects on subjects.subjID = offerings.subjID left join dayscheds on dayscheds.offerno = offerings.offerno left join days on dayscheds.daycode = days.daycode inner join faculty on faculty.facID = offerings.facID left join rooms on rooms.roomID = offerings.roomID where rooms.roomID="
+//					+ value;
+//			rs = st.executeQuery(query);
+//			while (rs.next()) {
+//				Offering offering = new Offering();
+//				offering.setID(rs.getInt("offerno"));
+//				offering.setSY(rs.getString("sy"));
+//				offering.setSemester(rs.getString("offerings.semester"));
+//				offering.setStartTime(rs.getString("st"));
+//				offering.setEndTime(rs.getString("et"));
+//				offering.setDay(rs.getString("dayname"));
+//				offering.setSubject(rs.getString("description"));
+//				offering.setFaculty(rs.getString("fname"), rs.getString("mname"), rs.getString("lname"));
+//				offering.setClassSize(rs.getInt("slots"));
+//				offering.setRoom(rs.getString("room_desc"));
+//				offeringList.add(offering);
+//			}
+//			conn.close();
+//		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(null,
+//					"(Offering DAO) Error retrieving list of offerings by room:\n" + e.getMessage() + "\n", "Error",
+//					JOptionPane.ERROR_MESSAGE);
+//		}
+//		return offeringList;
+//	}
 
-	public void addOfferings(int facID, Object roomID, int subjID, String schoolyear, String semester, int slots) {
+	public void addOfferings(int facID, Object roomID, int subjID, String sy, String semester, int slots) {
 		try {
 			openDBConnection();
-			query = "INSERT INTO offerings(facID, roomID, subjID, schoolyear, offerings.semester, slots) VALUES ("
-					+ facID + "," + roomID + "," + subjID + ",'" + schoolyear + "','" + semester + "'," + slots + ")";
+			query = "INSERT INTO offerings(facID, roomID, subjID, sy, offerings.semester, slots) VALUES ("
+					+ facID + "," + roomID + "," + subjID + ",'" + sy + "','" + semester + "'," + slots + ")";
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.executeUpdate();
 			conn.close();
@@ -103,40 +103,40 @@ public class OfferingDAO {
 		}
 	}
 
-	public void deleteAllDayscheds() {
-		try {
-			openDBConnection();
-			query = "Delete from dayscheds WHERE 1";
-			PreparedStatement preparedStmt = conn.prepareStatement(query);
-			preparedStmt.executeUpdate();
-			conn.close();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Offering DAO) Error deleting daysched:\n" + e.getMessage() + "\n",
-					"Error", JOptionPane.ERROR_MESSAGE);
-		}
-	}
+//	public void deleteAllDayscheds() {
+//		try {
+//			openDBConnection();
+//			query = "Delete from dayscheds WHERE 1";
+//			PreparedStatement preparedStmt = conn.prepareStatement(query);
+//			preparedStmt.executeUpdate();
+//			conn.close();
+//		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(null, "(Offering DAO) Error deleting daysched:\n" + e.getMessage() + "\n",
+//					"Error", JOptionPane.ERROR_MESSAGE);
+//		}
+//	}
+//
+//	public void addDaysched(int offerno, int daycode, String start_time, String end_time) {
+//		try {
+//			openDBConnection();
+//			query = "INSERT INTO dayscheds(offerno, daycode, start_time, end_time) VALUES (" + offerno + "," + daycode
+//					+ ",'" + start_time + "','" + end_time + "')";
+//			PreparedStatement preparedStmt = conn.prepareStatement(query);
+//			preparedStmt.executeUpdate();
+//			conn.close();
+//		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(null,
+//					"(Offering DAO) Error adding daysched:\n" + e.getMessage() + "\n" + start_time, "Error",
+//					JOptionPane.ERROR_MESSAGE);
+//		}
+//	}
 
-	public void addDaysched(int offerno, int daycode, String start_time, String end_time) {
-		try {
-			openDBConnection();
-			query = "INSERT INTO dayscheds(offerno, daycode, start_time, end_time) VALUES (" + offerno + "," + daycode
-					+ ",'" + start_time + "','" + end_time + "')";
-			PreparedStatement preparedStmt = conn.prepareStatement(query);
-			preparedStmt.executeUpdate();
-			conn.close();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null,
-					"(Offering DAO) Error adding daysched:\n" + e.getMessage() + "\n" + start_time, "Error",
-					JOptionPane.ERROR_MESSAGE);
-		}
-	}
-
-	public void editOfferings(int offerno, int facID, Object roomID, int subjID, String schoolyear, String semester,
+	public void editOfferings(int offerno, int facID, Object roomID, int subjID, String sy, String semester,
 			int slots) {
 		try {
 			openDBConnection();
 			query = "UPDATE offerings SET facID=" + facID + ", roomID=" + roomID + ", subjID=" + subjID
-					+ ", schoolyear='" + schoolyear + "', offerings.semester='" + semester + "', slots=" + slots
+					+ ", sy='" + sy + "', offerings.semester='" + semester + "', slots=" + slots
 					+ " where offerno=" + offerno;
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.executeUpdate();
@@ -147,19 +147,19 @@ public class OfferingDAO {
 		}
 	}
 
-	public void editDaysched(int offerno, int daycode, String start_time, String end_time) {
-		try {
-			openDBConnection();
-			query = "UPDATE dayscheds SET daycode=" + daycode + ", start_time='" + start_time + "', end_time='"
-					+ end_time + "' where offerno=" + offerno;
-			PreparedStatement preparedStmt = conn.prepareStatement(query);
-			preparedStmt.executeUpdate();
-			conn.close();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Offering DAO) Error editing daysched:\n" + e.getMessage() + "\n",
-					"Error", JOptionPane.ERROR_MESSAGE);
-		}
-	}
+//	public void editDaysched(int offerno, int daycode, String start_time, String end_time) {
+//		try {
+//			openDBConnection();
+//			query = "UPDATE dayscheds SET daycode=" + daycode + ", start_time='" + start_time + "', end_time='"
+//					+ end_time + "' where offerno=" + offerno;
+//			PreparedStatement preparedStmt = conn.prepareStatement(query);
+//			preparedStmt.executeUpdate();
+//			conn.close();
+//		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(null, "(Offering DAO) Error editing daysched:\n" + e.getMessage() + "\n",
+//					"Error", JOptionPane.ERROR_MESSAGE);
+//		}
+//	}
 
 	public void deleteOffering(int id) {
 		try {
@@ -174,18 +174,18 @@ public class OfferingDAO {
 		}
 	}
 
-	public void deleteDaysched(int id) {
-		try {
-			openDBConnection();
-			query = "Delete from rooms WHERE roomID=" + id;
-			PreparedStatement preparedStmt = conn.prepareStatement(query);
-			preparedStmt.executeUpdate();
-			conn.close();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Offering DAO) Error deleting daysched:\n" + e.getMessage() + "\n",
-					"Error", JOptionPane.ERROR_MESSAGE);
-		}
-	}
+//	public void deleteDaysched(int id) {
+//		try {
+//			openDBConnection();
+//			query = "Delete from rooms WHERE roomID=" + id;
+//			PreparedStatement preparedStmt = conn.prepareStatement(query);
+//			preparedStmt.executeUpdate();
+//			conn.close();
+//		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(null, "(Offering DAO) Error deleting daysched:\n" + e.getMessage() + "\n",
+//					"Error", JOptionPane.ERROR_MESSAGE);
+//		}
+//	}
 
 	public int getLastID() {
 		int last_id = 0;
@@ -222,95 +222,95 @@ public class OfferingDAO {
 		return daycode;
 	}
 
-	public ArrayList<Offering> courseListByCapacity(int capacity) {
-		ArrayList<Offering> offeringList = new ArrayList<Offering>();
-		try {
-			openDBConnection();
-			query = "SELECT offerings.offerno, schoolyear, offerings.semester, TIME_FORMAT(dayscheds.start_time, '%h:%i %p') as st, TIME_FORMAT(dayscheds.end_time, '%h:%i %p') as et, days.dayname, subjects.description, faculty.fname, faculty.mname, faculty.lname, slots, room_desc from offerings inner join subjects on subjects.subjID = offerings.subjID left join dayscheds on dayscheds.offerno = offerings.offerno left join days on dayscheds.daycode = days.daycode inner join faculty on faculty.facID = offerings.facID left join rooms on rooms.roomID = offerings.roomID  where slots <="
-					+ capacity;
-			rs = st.executeQuery(query);
-			while (rs.next()) {
-				Offering offering = new Offering();
-				offering.setID(rs.getInt("offerno"));
-				offering.setSY(rs.getString("schoolyear"));
-				offering.setSemester(rs.getString("offerings.semester"));
-				offering.setStartTime(rs.getString("st"));
-				offering.setEndTime(rs.getString("et"));
-				offering.setDay(rs.getString("dayname"));
-				offering.setSubject(rs.getString("description"));
-				offering.setFaculty(rs.getString("fname"), rs.getString("mname"), rs.getString("lname"));
-				offering.setClassSize(rs.getInt("slots"));
-				offering.setRoom(rs.getString("room_desc"));
-				offeringList.add(offering);
-			}
-			conn.close();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null,
-					"(Offering DAO) Error retrieving list of courses by capacity:\n" + e.getMessage() + "\n", "Error",
-					JOptionPane.ERROR_MESSAGE);
-		}
-		return offeringList;
-	}
+//	public ArrayList<Offering> courseListByCapacity(int capacity) {
+//		ArrayList<Offering> offeringList = new ArrayList<Offering>();
+//		try {
+//			openDBConnection();
+//			query = "SELECT offerings.offerno, sy, offerings.semester, TIME_FORMAT(dayscheds.start_time, '%h:%i %p') as st, TIME_FORMAT(dayscheds.end_time, '%h:%i %p') as et, days.dayname, subjects.description, faculty.fname, faculty.mname, faculty.lname, slots, room_desc from offerings inner join subjects on subjects.subjID = offerings.subjID left join dayscheds on dayscheds.offerno = offerings.offerno left join days on dayscheds.daycode = days.daycode inner join faculty on faculty.facID = offerings.facID left join rooms on rooms.roomID = offerings.roomID  where slots <="
+//					+ capacity;
+//			rs = st.executeQuery(query);
+//			while (rs.next()) {
+//				Offering offering = new Offering();
+//				offering.setID(rs.getInt("offerno"));
+//				offering.setSY(rs.getString("sy"));
+//				offering.setSemester(rs.getString("offerings.semester"));
+//				offering.setStartTime(rs.getString("st"));
+//				offering.setEndTime(rs.getString("et"));
+//				offering.setDay(rs.getString("dayname"));
+//				offering.setSubject(rs.getString("description"));
+//				offering.setFaculty(rs.getString("fname"), rs.getString("mname"), rs.getString("lname"));
+//				offering.setClassSize(rs.getInt("slots"));
+//				offering.setRoom(rs.getString("room_desc"));
+//				offeringList.add(offering);
+//			}
+//			conn.close();
+//		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(null,
+//					"(Offering DAO) Error retrieving list of courses by capacity:\n" + e.getMessage() + "\n", "Error",
+//					JOptionPane.ERROR_MESSAGE);
+//		}
+//		return offeringList;
+//	}
 
-	public ArrayList<Offering> listOfferingsByFaculty(int facID) {
-		ArrayList<Offering> offeringList = new ArrayList<Offering>();
-		try {
-			openDBConnection();
-			query = "SELECT offerings.offerno, schoolyear, offerings.semester, TIME_FORMAT(dayscheds.start_time, '%h:%i %p') as st, TIME_FORMAT(dayscheds.end_time, '%h:%i %p') as et, days.dayname, subjects.description, faculty.fname, faculty.mname, faculty.lname, slots, room_desc from offerings inner join subjects on subjects.subjID = offerings.subjID left join dayscheds on dayscheds.offerno = offerings.offerno left join days on dayscheds.daycode = days.daycode inner join faculty on faculty.facID = offerings.facID left join rooms on rooms.roomID = offerings.roomID where faculty.facID="
-					+ facID;
-			rs = st.executeQuery(query);
-			while (rs.next()) {
-				Offering offering = new Offering();
-				offering.setID(rs.getInt("offerno"));
-				offering.setSY(rs.getString("schoolyear"));
-				offering.setSemester(rs.getString("offerings.semester"));
-				offering.setStartTime(rs.getString("st"));
-				offering.setEndTime(rs.getString("et"));
-				offering.setDay(rs.getString("dayname"));
-				offering.setSubject(rs.getString("description"));
-				offering.setFaculty(rs.getString("fname"), rs.getString("mname"), rs.getString("lname"));
-				offering.setClassSize(rs.getInt("slots"));
-				offering.setRoom(rs.getString("room_desc"));
-				offeringList.add(offering);
-			}
-			conn.close();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null,
-					"(Offering DAO) Error retrieving list of offerings by room:\n" + e.getMessage() + "\n", "Error",
-					JOptionPane.ERROR_MESSAGE);
-		}
-		return offeringList;
-	}
+//	public ArrayList<Offering> listOfferingsByFaculty(int facID) {
+//		ArrayList<Offering> offeringList = new ArrayList<Offering>();
+//		try {
+//			openDBConnection();
+//			query = "SELECT offerings.offerno, sy, offerings.semester, TIME_FORMAT(dayscheds.start_time, '%h:%i %p') as st, TIME_FORMAT(dayscheds.end_time, '%h:%i %p') as et, days.dayname, subjects.description, faculty.fname, faculty.mname, faculty.lname, slots, room_desc from offerings inner join subjects on subjects.subjID = offerings.subjID left join dayscheds on dayscheds.offerno = offerings.offerno left join days on dayscheds.daycode = days.daycode inner join faculty on faculty.facID = offerings.facID left join rooms on rooms.roomID = offerings.roomID where faculty.facID="
+//					+ facID;
+//			rs = st.executeQuery(query);
+//			while (rs.next()) {
+//				Offering offering = new Offering();
+//				offering.setID(rs.getInt("offerno"));
+//				offering.setSY(rs.getString("sy"));
+//				offering.setSemester(rs.getString("offerings.semester"));
+//				offering.setStartTime(rs.getString("st"));
+//				offering.setEndTime(rs.getString("et"));
+//				offering.setDay(rs.getString("dayname"));
+//				offering.setSubject(rs.getString("description"));
+//				offering.setFaculty(rs.getString("fname"), rs.getString("mname"), rs.getString("lname"));
+//				offering.setClassSize(rs.getInt("slots"));
+//				offering.setRoom(rs.getString("room_desc"));
+//				offeringList.add(offering);
+//			}
+//			conn.close();
+//		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(null,
+//					"(Offering DAO) Error retrieving list of offerings by room:\n" + e.getMessage() + "\n", "Error",
+//					JOptionPane.ERROR_MESSAGE);
+//		}
+//		return offeringList;
+//	}
 
-	public ArrayList<Offering> listOfferingsByUnits(String sign) {
-		ArrayList<Offering> offeringList = new ArrayList<Offering>();
-		try {
-			openDBConnection();
-			query = "SELECT offerings.offerno, schoolyear, offerings.semester, TIME_FORMAT(dayscheds.start_time, '%h:%i %p') as st, TIME_FORMAT(dayscheds.end_time, '%h:%i %p') as et, days.dayname, subjects.description, faculty.fname, faculty.mname, faculty.lname, slots, room_desc from offerings inner join subjects on subjects.subjID = offerings.subjID left join dayscheds on dayscheds.offerno = offerings.offerno left join days on dayscheds.daycode = days.daycode inner join faculty on faculty.facID = offerings.facID left join rooms on rooms.roomID = offerings.roomID where units "
-					+ sign + " 2.0 order by RAND()";
-			rs = st.executeQuery(query);
-			while (rs.next()) {
-				Offering offering = new Offering();
-				offering.setID(rs.getInt("offerno"));
-				offering.setSY(rs.getString("schoolyear"));
-				offering.setSemester(rs.getString("offerings.semester"));
-				offering.setStartTime(rs.getString("st"));
-				offering.setEndTime(rs.getString("et"));
-				offering.setDay(rs.getString("dayname"));
-				offering.setSubject(rs.getString("description"));
-				offering.setFaculty(rs.getString("fname"), rs.getString("mname"), rs.getString("lname"));
-				offering.setClassSize(rs.getInt("slots"));
-				offering.setRoom(rs.getString("room_desc"));
-				offeringList.add(offering);
-			}
-			conn.close();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null,
-					"(Offering DAO) Error retrieving list of offerings by room:\n" + e.getMessage() + "\n", "Error",
-					JOptionPane.ERROR_MESSAGE);
-		}
-		return offeringList;
-	}
+//	public ArrayList<Offering> listOfferingsByUnits(String sign) {
+//		ArrayList<Offering> offeringList = new ArrayList<Offering>();
+//		try {
+//			openDBConnection();
+//			query = "SELECT offerings.offerno, sy, offerings.semester, TIME_FORMAT(dayscheds.start_time, '%h:%i %p') as st, TIME_FORMAT(dayscheds.end_time, '%h:%i %p') as et, days.dayname, subjects.description, faculty.fname, faculty.mname, faculty.lname, slots, room_desc from offerings inner join subjects on subjects.subjID = offerings.subjID left join dayscheds on dayscheds.offerno = offerings.offerno left join days on dayscheds.daycode = days.daycode inner join faculty on faculty.facID = offerings.facID left join rooms on rooms.roomID = offerings.roomID where units "
+//					+ sign + " 2.0 order by RAND()";
+//			rs = st.executeQuery(query);
+//			while (rs.next()) {
+//				Offering offering = new Offering();
+//				offering.setID(rs.getInt("offerno"));
+//				offering.setSY(rs.getString("sy"));
+//				offering.setSemester(rs.getString("offerings.semester"));
+//				offering.setStartTime(rs.getString("st"));
+//				offering.setEndTime(rs.getString("et"));
+//				offering.setDay(rs.getString("dayname"));
+//				offering.setSubject(rs.getString("description"));
+//				offering.setFaculty(rs.getString("fname"), rs.getString("mname"), rs.getString("lname"));
+//				offering.setClassSize(rs.getInt("slots"));
+//				offering.setRoom(rs.getString("room_desc"));
+//				offeringList.add(offering);
+//			}
+//			conn.close();
+//		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(null,
+//					"(Offering DAO) Error retrieving list of offerings by room:\n" + e.getMessage() + "\n", "Error",
+//					JOptionPane.ERROR_MESSAGE);
+//		}
+//		return offeringList;
+//	}
 
 	public ArrayList<Offering> getCoursesWithSameFaculty(int i) {
 		ArrayList<Offering> offeringList = new ArrayList<Offering>();

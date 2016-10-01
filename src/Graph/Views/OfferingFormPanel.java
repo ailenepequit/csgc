@@ -187,10 +187,10 @@ public class OfferingFormPanel extends JPanel {
 							subject.getID(subjectComboBox.getSelectedItem().toString()),
 							syComboBox.getSelectedItem().toString(), semComboBox.getSelectedItem().toString(),
 							Integer.parseInt(slotsField.getText()));
-				String st = format.to24hr(start_time);
-				String et = format.to24hr(end_time);
-				offering.editDaySched(offeringID, offering.getDaycode(dayComboBox.getSelectedItem().toString()), st,
-						et);
+//				String st = format.to24hr(start_time);
+//				String et = format.to24hr(end_time);
+//				offering.editDaySched(offeringID, offering.getDaycode(dayComboBox.getSelectedItem().toString()), st,
+//						et);
 			}
 		});
 		btnAddOffering.addActionListener(new ActionListener() {
@@ -215,8 +215,8 @@ public class OfferingFormPanel extends JPanel {
 
 				offering.addOffering(faculty.getFacID(facultyname), rm, subject.getID(subj), sy, sem,
 						Integer.parseInt(slots));
-				offering.addDaySched(offering.getLastOfferno(), offering.getDaycode(day), format.to24hr(start_time),
-						format.to24hr(end_time));
+//				offering.addDaySched(offering.getLastOfferno(), offering.getDaycode(day), format.to24hr(start_time),
+//						format.to24hr(end_time));
 				HomeView.offeringPanel.addOfferingToTable(offering.getLastOfferno(), sy, sem, start_time, end_time, day,
 						subj, facultyname, slots, rm);
 			}

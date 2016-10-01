@@ -80,12 +80,16 @@ public class Room {
 	}
 
 	public ArrayList<Room> roomList(String cond) {
-		if(cond.equals("All"))
-			return r.getAllRooms();
-		else if(cond.equals("Lecture"))
-			return r.getLecRooms();
-		else
-			return r.getLabRooms();
+		switch(cond){
+			case "All": 
+				return r.getAllRooms();
+			case "Lecture":
+				return r.getLecRooms();
+			case "Lab":
+				return r.getLabRooms();
+			default:
+				return r.getAllRooms();
+		}
 	}
 	
 	public void addRoom(String name, int b, String type, int capacity) {

@@ -1,14 +1,13 @@
 package Graph.Models;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import DAO.OfferingDAO;
 
 public class Offering {
 
 	private OfferingDAO offeringDAO = new OfferingDAO();
-	//private RoomDAO r = new RoomDAO();
-	//private Subject s = new Subject();
 	private Faculty f = new Faculty();
 	private int id, class_size, degree, color;
 	private String sy, sem, faculty, subject, start_time, end_time, days, room;
@@ -139,17 +138,17 @@ public class Offering {
 				getSubject(), getFaculty(), new Integer(getClassSize()), getRoom() };
 	}
 
-	public ArrayList<Offering> courseListByRoom(int room) {
-		return offeringDAO.listOfferingsByRoom(room);
-	}
+//	public ArrayList<Offering> courseListByRoom(int room) {
+//		return offeringDAO.listOfferingsByRoom(room);
+//	}
 
-	public ArrayList<Offering> courseListByFaculty(int facID) {
-		return offeringDAO.listOfferingsByFaculty(facID);
-	}
-
-	public ArrayList<Offering> courseListByUnits(String sign) {
-		return offeringDAO.listOfferingsByUnits(sign);
-	}
+//	public ArrayList<Offering> courseListByFaculty(int facID) {
+//		return offeringDAO.listOfferingsByFaculty(facID);
+//	}
+//
+//	public ArrayList<Offering> courseListByUnits(String sign) {
+//		return offeringDAO.listOfferingsByUnits(sign);
+//	}
 
 	public ArrayList<Offering> courseListWithFaculty() {
 		return offeringDAO.listCoursesWithFaculty();
@@ -173,32 +172,24 @@ public class Offering {
 	}
 
 	public void deleteOffering(int id) {
-		offeringDAO.deleteDaysched(id);
+//		offeringDAO.deleteDaysched(id);
 		offeringDAO.deleteOffering(id);
 	}
-
-	public void deleteDaysched(int id) {
-		offeringDAO.deleteDaysched(id);
-	}
-
-	public void addDaySched(int offerno, int daycode, String start_time, String end_time) {
-		offeringDAO.addDaysched(offerno, daycode, start_time, end_time);
-	}
-
-	public void editDaySched(int offerno, int daycode, String start_time, String end_time) {
-		offeringDAO.editDaysched(offerno, daycode, start_time, end_time);
-	}
+//
+//	public void deleteDaysched(int id) {
+//		offeringDAO.deleteDaysched(id);
+//	}
+//
+//	public void addDaySched(int offerno, int daycode, String start_time, String end_time) {
+//		offeringDAO.addDaysched(offerno, daycode, start_time, end_time);
+//	}
+//
+//	public void editDaySched(int offerno, int daycode, String start_time, String end_time) {
+//		offeringDAO.editDaysched(offerno, daycode, start_time, end_time);
+//	}
 
 	public int getLastOfferno() {
 		return offeringDAO.getLastID();
-	}
-
-	public int getDaycode(String day) {
-		return offeringDAO.getDaycode(day);
-	}
-
-	public void deleteAllDayscheds() {
-		offeringDAO.deleteAllDayscheds();
 	}
 
 	public boolean fits(Room room) {
@@ -227,5 +218,11 @@ public class Offering {
 		return (((Offering) o).getID() == this.id);
 	}
 	
-	
+	public int randEnrollees(){
+		Random random = new Random();
+		int min = 15;
+		int max = 40;
+		int enrollees = random.nextInt(max - min) + min;
+		return enrollees;
+	}
 }

@@ -4,9 +4,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import Graph.Controllers.WindowController;
-import Graph.Models.Offering;
-
 import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -15,7 +12,6 @@ import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 
@@ -25,8 +21,6 @@ public class Login extends JFrame {
 	private JPanel contentPane;
 	private JTextField userField;
 	private JPasswordField passwordField;
-	static Offering offering = new Offering();
-	static ArrayList<Offering> c = offering.offeringsList();;
 
 	public static void main(String[] args) {	
 		new Login();
@@ -68,15 +62,14 @@ public class Login extends JFrame {
 		
 		JButton btnLogin = new JButton("Login");
 		btnLogin.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				String user = userField.getText();
-				@SuppressWarnings("deprecation")
 				String pwd = passwordField.getText();
 				if(verifyUser(user,pwd) == true){
 					HomeView tv = new HomeView();
-					WindowController w = new WindowController(offering, tv);
-					dispose();
-					w.viewHomePage(tv);
+					tv.show(true);
+					show(false);
 				} else
 					JOptionPane.showMessageDialog(null, "Invalid username or password.",
 						"Error", JOptionPane.ERROR_MESSAGE);
@@ -110,6 +103,8 @@ public class Login extends JFrame {
 		contentPane.add(label);
 		label.setOpaque(true);
 		
+		this.getRootPane().setDefaultButton(btnLogin);
+		btnLogin.requestFocus();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 		setLocationRelativeTo(null);

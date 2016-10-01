@@ -23,7 +23,7 @@ import javax.swing.table.TableRowSorter;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class Formatter {
 	
-	final String imagesPath = "C:\\Users\\USER\\OneDrive\\workspace\\CSGC\\src\\resource\\images\\";
+	final String imagesPath = "C:\\Users\\acer\\Desktop\\eclipse\\workspace\\CSGC\\src\\resource\\images\\";
 	final String newIcon = imagesPath + "new.png";
 	final String addIcon = imagesPath + "plus.png";
 	final String updateIcon = imagesPath + "saveupdate.png";

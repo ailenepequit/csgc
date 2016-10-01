@@ -46,9 +46,11 @@ public class SubjectDAO {
 				Subject subject = new Subject();
 				subject.setID(rs.getInt("subjID"));
 				subject.setSubject(rs.getString("description"));
-				subject.setUnits(rs.getDouble("units"));
+				subject.setLecUnits(rs.getDouble("lec_units"));
+				subject.setLabUnits(rs.getDouble("lab_units"));
 				subject.setYrLvl(rs.getInt("yr_level"));
 				subject.setSemester(rs.getString("semester"));
+				subject.setTag(rs.getString("tag"));
 				subjectList.add(subject);
 			}
 			conn.close();

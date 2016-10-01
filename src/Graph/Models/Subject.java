@@ -6,8 +6,8 @@ import DAO.SubjectDAO;
 
 public class Subject {
 	private int id, yr_lvl, class_size;
-	private double units;
-	private String subject, sem;
+	private double units, lec_units, lab_units;
+	private String subject, sem, tag;
 	private SubjectDAO s = new SubjectDAO();
 	
 	public Subject() {
@@ -57,7 +57,18 @@ public class Subject {
 	public double getUnits() {
 		return units;
 	}
-	
+	public void setLecUnits(double lec_units) {
+		this.lec_units = lec_units;
+	}
+	public double getLecUnits() {
+		return lec_units;
+	}
+	public void setLabUnits(double lab_units) {
+		this.lab_units = lab_units;
+	}
+	public double getLabUnits() {
+		return lab_units;
+	}
 	public void setClassSize(int class_size){
 		this.class_size = class_size;
 	}
@@ -65,9 +76,17 @@ public class Subject {
 	public int getClassSize(){
 		return class_size;
 	}
-	
+
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+
+	public String getTag(){
+		return tag;
+	}
+
 	public Object[] toObjectArray() {
-		return new Object[] { getID(), getSubject(), getUnits(), getYrLvl(), getSemester() };
+		return new Object[] { getID(), getSubject(), getLecUnits(), getLabUnits(), getYrLvl(), getSemester(), getTag() };
 	}
 	public int count() {
 		return s.countSubjects();
@@ -91,5 +110,12 @@ public class Subject {
 	
 	public ArrayList<Subject> subjectList(String cond) {
 		return s.listSubjects(cond);
+	}
+
+	public boolean subjectHasLabHours(){
+		if (this.getLabUnits() > 0)
+			return true; 
+		else
+			return false;
 	}
 }

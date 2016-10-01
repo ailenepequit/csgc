@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -76,7 +77,7 @@ public class OfferingPanel extends JPanel {
 			offerings_data[i] = courselist.get(i).toTimetableArray();
 		}
 
-		JScrollPane scrollPane = new JScrollPane();
+		final JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(10, 62, 982, 466);
 		scrollPane.getViewport().setBackground(Color.WHITE);
 
@@ -189,13 +190,13 @@ public class OfferingPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				int i = table.getSelectedRow();
 				offeringID = Integer.parseInt(table.getValueAt(i, 0).toString());
-				if (i >= 0) {
-					offering.deleteOffering(offeringID);
-					offering.deleteDaysched(offeringID);
-					offeringModel.removeRow(i);
-				} else {
-					System.out.println("Delete Error");
-				}
+//				if (i >= 0) {
+//					offering.deleteOffering(offeringID);
+//					offering.deleteDaysched(offeringID);
+//					offeringModel.removeRow(i);
+//				} else {
+//					System.out.println("Delete Error");
+//				}
 			}
 		});
 
@@ -236,16 +237,13 @@ public class OfferingPanel extends JPanel {
 		format.buttonFormat(btnGenerateTimetable, format.imagesPath + "automate.png");
 		btnGenerateTimetable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String[] sems = {"1st", "2nd", "S"};
-				String selected_sem = (String) JOptionPane.showInputDialog(OfferingPanel.this, 
-				        "Select Semester:",
-				        "Semester",
-				        JOptionPane.INFORMATION_MESSAGE, 
-				        null, 
-				        sems, 
-				        sems[0]);
+//				setVisible(false);
+//				HomeView.sysem.setVisible(true);
+				showOption();
 				scrollPane.setViewportView(table);
-				HomeView.graphPanel.subjectList = subject.subjectList(selected_sem);
+				HomeView.lblGeneratedTimetableFor.setVisible(true);
+				HomeView.lblGeneratedTimetableFor.setText("Generated Schedule for SY " + offering.getSY() + " " + offering.getSemester() + " Semester");
+				//HomeView.graphPanel.subjectList = subject.subjectList(offering.getSemester());
 			}
 		});
 		
@@ -297,5 +295,25 @@ public class OfferingPanel extends JPanel {
 		offeringModel.setValueAt(faculty, row, 7);
 		offeringModel.setValueAt(slots, row, 8);
 		offeringModel.setValueAt(room, row, 9);
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void showOption(){
+		JComboBox syCB = new JComboBox();
+		syCB.setModel(new DefaultComboBoxModel(new String[] {"2016-2017", "2017-2018", "2018-2019", "2019-2020", "2021-2022", "2022-2023", "2023-2024", "2024-2025", "2025-2026"}));
+		JComboBox semCB = new JComboBox();
+		semCB.setModel(new DefaultComboBoxModel(new String[] {"1st", "2nd", "S"}));
+		
+		Object[] message = {
+				"School Year: ", syCB,
+				"Semester: ", semCB
+		};
+		
+		int option = JOptionPane.showConfirmDialog(this, message, "Generate Offeing Schedule for: ", JOptionPane.OK_CANCEL_OPTION);
+		
+		if(option == JOptionPane.OK_OPTION){
+			offering.setSY(syCB.getSelectedItem().toString());
+			offering.setSemester(semCB.getSelectedItem().toString());
+		}
 	}
 }

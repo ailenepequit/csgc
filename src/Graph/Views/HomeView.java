@@ -4,7 +4,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
-import Graph.Controllers.WindowController;
 import Graph.Models.Faculty;
 import Graph.Models.Offering;
 import Graph.Models.Room;
@@ -28,6 +27,7 @@ public class HomeView extends JFrame {
 
 	private JPanel contentPane, sidebarPanel;
 	private JButton homeBtn, subjectsBtn, facultyBtn, roomsBtn, visualizationBtn;
+	static JLabel lblGeneratedTimetableFor;
 
 	static GraphPanel graphPanel;
 	VisualizationPanel vizPanel;
@@ -36,7 +36,7 @@ public class HomeView extends JFrame {
 	FacultyPanel facultyPanel;
 	static OfferingPanel offeringPanel;
 	static OfferingFormPanel formPanel;
-
+	
 	Offering offering = new Offering();
 	Subject subject = new Subject();
 	Room room = new Room();
@@ -45,7 +45,6 @@ public class HomeView extends JFrame {
 	ArrayList<Subject> subjectList = subject.subjectList("All");
 	int N = subjectList.size();
 
-	WindowController w;
 	Formatter format = new Formatter();
 
 	public HomeView() {
@@ -87,7 +86,7 @@ public class HomeView extends JFrame {
 
 		contentPane.add(vizPanel);
 		vizPanel.setVisible(false);
-		addEdges();
+		//addEdges();
 	}
 	
 	public void graph(){
@@ -104,13 +103,13 @@ public class HomeView extends JFrame {
 		lblAbsked.setFont(new Font("SansSerif", Font.BOLD, 22));
 		lblAbsked.setBounds(0, 0, 242, 58);
 
-		JLabel lblGeneratedTimetableFor = new JLabel("List of Offerings");
+		lblGeneratedTimetableFor = new JLabel("List of Offerings");
 		lblGeneratedTimetableFor.setVisible(false);
 		lblGeneratedTimetableFor.setBackground(new Color(46, 139, 87));
 		lblGeneratedTimetableFor.setForeground(new Color(0, 0, 0));
 		lblGeneratedTimetableFor.setOpaque(true);
-		lblGeneratedTimetableFor.setFont(new Font("SansSerif", Font.BOLD, 15));
-		lblGeneratedTimetableFor.setBounds(316, 18, 378, 30);
+		lblGeneratedTimetableFor.setFont(new Font("SansSerif", Font.BOLD, 18));
+		lblGeneratedTimetableFor.setBounds(264, 18, 550, 30);
 
 		JButton logoutBtn = new JButton("");
 		logoutBtn.setIcon(new ImageIcon(format.imagesPath + "logout.png"));
