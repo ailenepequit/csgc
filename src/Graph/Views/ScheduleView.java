@@ -4,151 +4,67 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.JButton;
-import java.awt.Font;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import Graph.Models.Offering;
 
 import javax.swing.JScrollPane;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.awt.event.ActionEvent;
-import javax.swing.JComboBox;
 
-@SuppressWarnings({ "rawtypes", "unchecked", "serial" })
+@SuppressWarnings("serial")
 public class ScheduleView extends JFrame {
 
 	private JPanel contentPane;
-	JScrollPane scrollPane;
-	private JTable timeTable;
 	Offering c = new Offering();
 	ArrayList<Offering> offeringlist;
 	MultiSpanCellTable mtable;
 	private JTable scheduleTable;
-	JLabel header, label;
-	String table;
+	JLabel header;
 	int id;
+	DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+	ArrayList<Offering> sched;
+	DefaultTableModel schedmodel;
+	Object[][] data_sched;
 
 	Formatter format = new Formatter();
 
-	public ScheduleView(int id, String table) {
-		this.id = id;
-		this.table = table;
-		setBounds(100, 100, 1090, 740);
+	public ScheduleView(String x, ArrayList<Offering> sched) {
+		this.sched = new ArrayList<Offering>(sched);
+		setBounds(100, 100, 1090, 746);
 		setLocationRelativeTo(null);
-		setTitle(table.toUpperCase() + " Schedule");
+		setTitle("Schedule");
 
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(51, 51, 51));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(null);
 		setContentPane(contentPane);
-		
-		components();
-		timeTableComponents();
+
+		components(x);
 		scheduleTableComponents();
-		setMtable();
 	}
 
-	public void components() {
-		String[] view = { "Tabular", "Calendar" };
-		JComboBox comboBox = new JComboBox(view);
-		comboBox.setBounds(861, 23, 102, 20);
-		comboBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if (comboBox.getSelectedItem().equals("Tabular")) {
-					timeTable.setVisible(true);
-					scheduleTable.setVisible(false);
-				}
-				if (comboBox.getSelectedItem().equals("Calendar")) {
-					scrollPane.setViewportView(mtable);
-					scheduleTable.setVisible(false);
-					timeTable.setVisible(false);
-					mtable.setVisible(true);
-					setMtable();
-				}
-			}
+	public void components(String x) {
 
-		});
-
-		label = new JLabel("");
-		label.setBackground(new Color(46, 139, 87));
-		label.setOpaque(true);
-		label.setForeground(new Color(255, 255, 255));
-		label.setFont(new Font("SansSerif", Font.PLAIN, 15));
-		label.setBounds(10, 26, 779, 18);
-
-		header = new JLabel("");
-		header.setBounds(0, 0, 1074, 52);
+		header = new JLabel("      " + x);
+		header.setBounds(0, 0, 1074, 32);
+		header.setForeground(Color.white);
 		header.setBackground(new Color(46, 139, 87));
 		header.setOpaque(true);
-
-		contentPane.add(comboBox);
-		
-		contentPane.add(label);
 		contentPane.add(header);
-	}
 
-	public void timeTableComponents() {
-		Object[][] data = new Object[][] { { null, null, null, null, null, null, null, null, null, null } };
-		String[] columns = new String[] { "Id", "SY", "Semester", "Start Time", "End Time", "Day", "Description",
-				"Faculty", "Class Size", "Room" };
-
-		if (table.equals("room")) {
-			offeringlist = c.courseListByRoom(id);
-			data = new Object[offeringlist.size()][];
-			if (offeringlist.size() != 0) {
-				for (int i = 0; i < offeringlist.size(); i++) {
-					data[i] = offeringlist.get(i).toTimetableArray();
-				}
-			} else
-				data = new Object[][] { { null, null, null, null, null, null, null, null, null, null } };
-
-			// label.setText(offeringlist.get(id).getRoom() + " Schedule");
-		}
-
-		if (table.equals("faculty")) {
-			offeringlist = c.courseListByFaculty(id);
-			data = new Object[offeringlist.size()][];
-			if (offeringlist.size() != 0) {
-				for (int i = 0; i < offeringlist.size(); i++) {
-					data[i] = offeringlist.get(i).toTimetableArray();
-				}
-			} else
-				data = new Object[][] { { null, null, null, null, null, null, null, null, null, null } };
-
-			label.setText(offeringlist.get(id).getFaculty() + " Schedule");
-		}
-
-		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-
-		DefaultTableModel model = new DefaultTableModel(data, columns);
-		timeTable = new JTable(model);
-		DefaultTableCellRenderer renderer = (DefaultTableCellRenderer) timeTable.getTableHeader().getDefaultRenderer();
-
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		timeTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
-		timeTable.setRowSelectionAllowed(false);
-		timeTable.setGridColor(Color.lightGray);
-		timeTable.setRowHeight(21);
-		timeTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
-		timeTable.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		timeTable.setBounds(10, 61, 1054, 489);
-		scrollPane = new JScrollPane();
-		scrollPane.setBounds(0, 54, 1074, 647);
-		//scrollPane.setViewportView(timeTable);
-		contentPane.add(scrollPane);
 	}
 
 	public void scheduleTableComponents() {
 
-		Object[][] data_sched = new Object[][] { { null, null, null, null, null, null, null },
+		data_sched = new Object[][] { { null, null, null, null, null, null, null },
 				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
 				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
 				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
@@ -166,97 +82,140 @@ public class ScheduleView extends JFrame {
 
 		String[] cols = new String[] { "Time", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
-		DefaultTableModel schedmodel = new DefaultTableModel(data_sched, cols);
+		schedmodel = new DefaultTableModel(data_sched, cols);
+		setTableCellValue();
+		scheduleTable = new JTable(schedmodel) {
+			@Override
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+				Component comp = super.prepareRenderer(renderer, row, col);
+				Object value = getModel().getValueAt(row, col);
+				
+				if (col != 0 && value != null) {
+					comp.setBackground(Color.pink);
+				} else {
+					comp.setBackground(Color.white);
+				}
+				return comp;
+			}
 
-		scheduleTable = new JTable(schedmodel);
+			public boolean getScrollableTracksViewportWidth() {
+				return getPreferredSize().width < getParent().getWidth();
+			}
+		};
+		//scheduleTable.setGridColor(Color.lightGray);
+		scheduleTable.setRowSelectionAllowed(false);
+		format.tableFormat(scheduleTable);
+		scheduleTable.setVisible(true);
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 36, 1054, 668);
+		contentPane.add(scrollPane);
 
-		String[] timeslot = { "07:00AM-07:30AM", "07:30AM-08:00AM", "08:00AM-08:30AM", "08:30AM-09:00AM",
-				"09:00AM-09:30AM", "09:30AM-10:00AM", "10:00AM-10:30AM", "10:30AM-11:00AM", "11:00AM-11:30AM",
-				"11:30AM-12:00PM", "12:00PM-12:30PM", "12:30PM-01:00PM", "01:00PM-01:30PM", "01:30PM-02:00PM",
-				"02:00PM-02:30PM", "02:30PM-03:00PM", "03:00PM-03:30PM", "03:30PM-04:00PM", "04:00PM-04:30PM",
-				"04:30PM-05:00PM", "05:00PM-05:30PM", "05:30PM-06:00PM", "06:00PM-06:30PM", "06:30PM-07:00PM",
-				"07:00PM-07:30PM", "07:30PM-08:00PM", "08:00PM-08:30PM", "08:30PM-09:00PM" };
+		String[] timeslot = { "07:00-07:30 AM", "07:30-08:00 AM", "08:00-08:30 AM", "08:30-09:00 AM", "09:00-09:30 AM",
+				"09:30-10:00 AM", "10:00-10:30 AM", "10:30-11:00 AM", "11:00-11:30 AM", "11:30-12:00 PM",
+				"12:00-12:30 PM", "12:30-01:00 PM", "01:00-01:30 PM", "01:30-02:00 PM", "02:00-02:30 PM",
+				"02:30-03:00 PM", "03:00-03:30 PM", "03:30-04:00 PM", "04:00-04:30 PM", "04:30-05:00 PM",
+				"05:00-05:30 PM", "05:30-06:00 PM", "06:00-06:30 PM", "06:30-07:00 PM", "07:00-07:30 PM",
+				"07:30-08:00 PM", "08:00-08:30 PM", "08:30-09:00 PM" };
+
 		for (int i = 0; i < scheduleTable.getRowCount(); i++) {
 			scheduleTable.setValueAt(timeslot[i], i, 0);
 		}
-		scheduleTable.setVisible(false);
-		scheduleTable.setBounds(10, 74, 1054, 616);
-		contentPane.add(scheduleTable);
+
+		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+		for (int col = 0; col < scheduleTable.getColumnCount(); col++) {
+			scheduleTable.getColumnModel().getColumn(col).setCellRenderer(centerRenderer);
+		}
+
+		scrollPane.setViewportView(scheduleTable);
 	}
 
-	public void setMtable() {
-		Object[][] data = new Object[][] { { null, null, null, null, null, null, null },
-				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
-				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
-				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
-				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
-				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
-				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
-				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
-				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
-				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
-				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
-				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
-				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
-				{ null, null, null, null, null, null, null }, { null, null, null, null, null, null, null },
-				{ null, null, null, null, null, null, null }, };
-
-		String[] cols = new String[] { "Time", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
-		AttributiveCellTableModel ml = new AttributiveCellTableModel(data, cols);
-		final CellSpan cellAtt = (CellSpan) ml.getCellAttribute();
-		mtable = new MultiSpanCellTable(ml);
-		String[] timeslot = { "07:00AM-07:30AM", "07:30AM-08:00AM", "08:00AM-08:30AM", "08:30AM-09:00AM",
-				"09:00AM-09:30AM", "09:30AM-10:00AM", "10:00AM-10:30AM", "10:30AM-11:00AM", "11:00AM-11:30AM",
-				"11:30AM-12:00PM", "12:00PM-12:30PM", "12:30PM-01:00PM", "01:00PM-01:30PM", "01:30PM-02:00PM",
-				"02:00PM-02:30PM", "02:30PM-03:00PM", "03:00PM-03:30PM", "03:30PM-04:00PM", "04:00PM-04:30PM",
-				"04:30PM-05:00PM", "05:00PM-05:30PM", "05:30PM-06:00PM", "06:00PM-06:30PM", "06:30PM-07:00PM",
-				"07:00PM-07:30PM", "07:30PM-08:00PM", "08:00PM-08:30PM", "08:30PM-09:00PM" };
-		for (int i = 0; i < mtable.getRowCount(); i++) {
-			mtable.setValueAt(timeslot[i], i, 0);
-		}
-		scrollPane.setViewportView(mtable);
-	
-		// int[] col = { 1, 1 };
-		// int[] rows = { 1, 2 };
-		// cellAtt.combine(rows, col);
-		// MultiSpanCellTableUI m = new MultiSpanCellTableUI();
-		// m.paint(getGraphics(), mtable);
-		// ColoredCell cc = (ColoredCell) ml.getCellAttribute();
-		// cc.setBackground(Color.CYAN, 3, 1);
-		// /table.clearSelection();
-		// mtable.revalidate();
-		// mtable.repaint();
-		DefaultTableCellRenderer renderer = (DefaultTableCellRenderer) mtable.getTableHeader().getDefaultRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-		// mtable.setEnabled(false);
-		mtable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
-		mtable.setRowSelectionAllowed(false);
-		mtable.setGridColor(Color.lightGray);
-		mtable.setRowHeight(21);
-		mtable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
-		mtable.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		mtable.setBounds(10, 61, 1054, 489);
-
-		JButton btnPrint = new JButton("Print");
-		btnPrint.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int[] rows = mtable.getSelectedRows();
-				int[] cols = mtable.getSelectedColumns();
-				for(int i = 0; i < rows.length; i++)
-					System.out.print("row " + rows[i]);
-				for(int j = 0; j < cols.length; j++)
-					System.out.println("col " + cols[j]);
-				
-				cellAtt.combine(rows, cols);
-				mtable.clearSelection();
-				mtable.revalidate();
-				mtable.repaint();
+	public void setTableCellValue() {
+		for (Offering o : sched) {
+			String day = o.getTimeslot();
+			int row = 0;
+			String room = "";
+			System.out.println(o.getRoom());
+			try {
+				if (!o.getRoom().equals(null))
+					room = o.getRoom();
+				else
+					room = "TBA";
+			} catch (Exception e) {
+				System.err.println(e);
 			}
-		});
-		format.buttonFormat(btnPrint, format.printIcon);
-		btnPrint.setBounds(993, 22, 71, 23);
-		contentPane.add(btnPrint);
+			if (day.contains("MTh")) {
+				row = setTableRow(day);
+				schedmodel.setValueAt("", row - 1, 1);
+				schedmodel.setValueAt(o.getDescription(), row, 1);
+				schedmodel.setValueAt(room, row + 1, 1);
+				schedmodel.setValueAt("", row-1, 4);
+				schedmodel.setValueAt(o.getDescription(), row, 4);
+				schedmodel.setValueAt(room, row + 1, 4);
+			} else if (day.contains("TuF")) {
+				row = setTableRow(day);
+				schedmodel.setValueAt("", row - 1, 2);
+				schedmodel.setValueAt(o.getDescription(), row, 2);
+				schedmodel.setValueAt(room, row + 1, 2);
+				schedmodel.setValueAt("", row - 1, 5);
+				schedmodel.setValueAt(o.getDescription(), row, 5);
+				schedmodel.setValueAt(room, row + 1, 5);
+			}
+			if (day.contains("W")) {
+				row = setWSTableRow(day);
+				schedmodel.setValueAt("", row - 1, 3);
+				schedmodel.setValueAt(o.getDescription(), row, 3);
+				schedmodel.setValueAt(room, row + 1, 3);
+				schedmodel.setValueAt("", row + 2, 3);
+			}
+			if (day.contains("S")) {
+				row = setWSTableRow(day);
+				schedmodel.setValueAt("", row - 1, 6);
+				schedmodel.setValueAt(o.getDescription(), row, 6);
+				schedmodel.setValueAt(room, row + 1, 6);
+				schedmodel.setValueAt("", row + 2, 6);
+			}
+		}
+	}
+
+	public int setTableRow(String timeslot) {
+		int row = 0;
+		if (timeslot.contains("7:30-9:00 AM")) {
+			row = 2;
+		} else if (timeslot.contains("9:00-10:30 AM")) {
+			row = 5;
+		} else if (timeslot.contains("10:30-12:00 PM")) {
+			row = 8;
+		} else if (timeslot.contains("12:00-1:30 PM")) {
+			row = 11;
+		} else if (timeslot.contains("1:30-3:00 PM")) {
+			row = 14;
+		} else if (timeslot.contains("3:00-4:30 PM")) {
+			row = 17;
+		} else if (timeslot.contains("4:30-6:00 PM")) {
+			row = 20;
+		} else if (timeslot.contains("6:00-7:30 PM")) {
+			row = 23;
+		} else if (timeslot.contains("7:30-9:00 PM")) {
+			row = 26;
+		}
+		return row;
+	}
+
+	public int setWSTableRow(String timeslot) {
+		int row = 0;
+		if (timeslot.contains("8:00-10:00 AM")) {
+			row = 3;
+		} else if (timeslot.contains("10:00-12:00 PM")) {
+			row = 7;
+		} else if (timeslot.contains("1:00-3:00 PM")) {
+			row = 13;
+		} else if (timeslot.contains("3:00-5:00 PM")) {
+			row = 17;
+		} else if (timeslot.contains("5:00-7:00 PM")) {
+			row = 21;
+		} else if (timeslot.contains("7:00-9:00 PM")) {
+			row = 25;
+		}
+		return row;
 	}
 }

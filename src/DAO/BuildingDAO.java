@@ -14,12 +14,12 @@ public class BuildingDAO {
 
 	private String bname, query;
 	private int bID;
-	private String url = "jdbc:mysql://localhost:3306/absked";
+	private String url = "jdbc:mysql://localhost:3306/absked?zeroDateTimeBehavior=convertToNull&autoReconnect=true&characterEncoding=UTF-8&characterSetResults=UTF-8";
 	private Connection conn = null;
 	private Statement st;
 	private ResultSet rs;
-	
-	public void openDBConnection(){
+
+	public void openDBConnection() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection(url, "root", "");
@@ -29,6 +29,7 @@ public class BuildingDAO {
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}
+
 	
 	public String getBname(int bID) {
 		try {

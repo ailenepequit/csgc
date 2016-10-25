@@ -1,15 +1,12 @@
 package Graph.Models;
 
 import java.util.ArrayList;
-
 import DAO.RoomDAO;
 
 public class Room {
 
 	private int id, capacity;
-	private RoomSize roomSize;
-	private String name, type, building;
-	private int color;
+	private String name, type, building, color;
 	private RoomDAO r = new RoomDAO();
 
 	public Room() {
@@ -59,18 +56,6 @@ public class Room {
 		return building;
 	}
 
-	public void setColor(int color) {
-		this.color = color;
-	}
-
-	public int getColor() {
-		return color;
-	}
-
-	public int getRoom(int colorid) {
-		return id;
-	}
-
 	public String toString() {
 		return this.name + " " + this.building + " " + this.type + " " + this.capacity;
 	}
@@ -80,12 +65,16 @@ public class Room {
 	}
 
 	public ArrayList<Room> roomList(String cond) {
-		if(cond.equals("All"))
-			return r.getAllRooms();
-		else if(cond.equals("Lecture"))
-			return r.getLecRooms();
-		else
-			return r.getLabRooms();
+		switch(cond){
+			case "All": 
+				return r.getAllRooms();
+			case "Lec":
+				return r.getLecRooms();
+			case "Lab":
+				return r.getLabRooms();
+			default:
+				return r.getAllRooms();
+		}
 	}
 	
 	public void addRoom(String name, int b, String type, int capacity) {
@@ -103,58 +92,32 @@ public class Room {
 	public int count() {
 		return r.countRooms();
 	}
-
-	public ArrayList<Room> compatibleCourses() {
-		return r.roomCanHold(capacity);
+	
+	public ArrayList<Room> getLabRooms(){
+		return r.getLabRooms();
 	}
 	
-//	public ArrayList<Room> getLabRooms(){
-//		return r.getLabRooms();
-//	}
-//	
-//	public ArrayList<Room> getLecRooms(){
-//		return r.getLecRooms();
-//	}
-	
-	public void setSize(RoomSize roomSize) {
-		if (Room.isValidRoomSize(roomSize))
-			this.roomSize = roomSize;
-	}
-
-	public RoomSize getSize() {
-		return roomSize;
+	public ArrayList<Room> getLecRooms(){
+		return r.getLecRooms();
 	}
 	
-	public int compareTo(Room o) {
-		if (o.getSize() == this.roomSize)
-			return 0;
-		else if (o.getSize() == RoomSize.MEDIUM && this.roomSize == RoomSize.LARGE)
-			return -1;
-		return 1;
+	public void setColor(String color){
+		this.color = color;
+	}
+	
+	public String getColor(){
+		return color;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (o == null) // Null references are not equal to this instance.
-			return false;
-		if (!o.getClass().equals(Room.class)) // Neither are they instances of
-												// different classes
-			return false;
-		return (((Room) o).getID()==(this.id));
+	public void setRoomColor(String room, String color) {
+		r.setRoomColor(room, color);
 	}
 	
-	public static RoomSize getRoomSize(int room_size) {
-		if (room_size <= 20)
-			return RoomSize.SMALL;
-		if (room_size <= 30 && room_size > 20)
-			return RoomSize.MEDIUM;
-		if (room_size > 30)
-			return RoomSize.LARGE;
-		return RoomSize.NULL;
-	}
-
-	public static boolean isValidRoomSize(RoomSize roomSize) {
-		return (roomSize == RoomSize.LARGE || roomSize == RoomSize.MEDIUM);
+	public String getRoomColor(String room){
+		return r.getRoomColor(room);
 	}
 	
+	public Object[] legendRoomArray(){
+		return new Object[] { getColor() ,getName()};
+	}
 }

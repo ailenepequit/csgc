@@ -45,12 +45,10 @@ public class RoomPanel extends JPanel {
 	
 	public RoomPanel() {
 		setBackground(Color.WHITE);
-		Building b = new Building();
-		DefaultComboBoxModel<String> cm = new DefaultComboBoxModel<String>();
+		final Building b = new Building();
+		final DefaultComboBoxModel<String> cm = new DefaultComboBoxModel<String>();
 		ArrayList<Building> blist = b.buildingList();
-		
-
-		String[] room_columns = new String[] { "Id", "Building", "Name", "Type", "Capacity" };
+		final String[] room_columns = new String[] { "Id", "Building", "Name", "Type", "Capacity" };
 
 		room_data = new Object[roomlist.size()][];
 		for (int i = 0; i < roomlist.size(); i++) {
@@ -107,11 +105,10 @@ public class RoomPanel extends JPanel {
 		format.buttonFormat(btnViewRoomTimetable, format.viewTimetableIcon);
 		btnViewRoomTimetable.setBounds(802, 19, 170, 30);
 		btnViewRoomTimetable.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(roomID);
-				ScheduleView sv = new ScheduleView(roomID, "room");
-				sv.show();
+//				System.out.println(roomID);
+//				ScheduleView sv = new ScheduleView(roomID, "room");
+//				sv.show();
 			}
 		});
 

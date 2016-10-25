@@ -13,12 +13,12 @@ import Graph.Models.Subject;
 
 public class SubjectDAO {
 
-	private int sID;
+	private int sID, yr_lvl;
 	private String url = "jdbc:mysql://localhost:3306/absked?zeroDateTimeBehavior=convertToNull&autoReconnect=true&characterEncoding=UTF-8&characterSetResults=UTF-8";
 	private Connection conn = null;
 	private Statement st;
 	private ResultSet rs;
-	private String query;
+	private String query, tag;
 
 	public void openDBConnection() {
 		try {
@@ -31,11 +31,11 @@ public class SubjectDAO {
 		}
 	}
 
-	public ArrayList<Subject> listSubjects(String cond) {
-		if(cond.equals("All"))
+	public ArrayList<Subject> listSubjects(String sem, int yr) {
+		if(sem.equals("All"))
 			query = "SELECT * FROM subjects";
 		else{
-			String con = " where semester='"+ cond +"'";
+			String con = " where semester='"+ sem +"'" + "and yr_level="+yr;
 			query = "SELECT * FROM subjects" + con;
 		}
 		ArrayList<Subject> subjectList = new ArrayList<Subject>();
@@ -45,10 +45,13 @@ public class SubjectDAO {
 			while (rs.next()) {
 				Subject subject = new Subject();
 				subject.setID(rs.getInt("subjID"));
-				subject.setSubject(rs.getString("description"));
-				subject.setUnits(rs.getDouble("units"));
+				subject.setSubject(rs.getString("course_code"));
+				subject.setDescription(rs.getString("description"));
+				subject.setLecUnits(rs.getDouble("lec_units"));
+				subject.setLabUnits(rs.getDouble("lab_units"));
 				subject.setYrLvl(rs.getInt("yr_level"));
 				subject.setSemester(rs.getString("semester"));
+				subject.setTag(rs.getString("tag"));
 				subjectList.add(subject);
 			}
 			conn.close();
@@ -129,7 +132,7 @@ public class SubjectDAO {
 				Subject subject = new Subject();
 				subject.setID(rs.getInt("subjID"));
 				subject.setSubject(rs.getString("description"));
-				subject.setUnits(rs.getDouble("units"));
+				//subject.setUnits(rs.getDouble("units"));
 				subjectList.add(subject);
 			}
 			conn.close();
@@ -144,7 +147,7 @@ public class SubjectDAO {
 	public int getID(String name) {
 		try {
 			openDBConnection();
-			query = "SELECT subjID from subjects where description ='" + name + "'";
+			query = "SELECT subjID from subjects where course_code ='" + name + "'";
 			rs = st.executeQuery(query);
 			while (rs.next()) {
 				sID = rs.getInt("subjID");
@@ -155,5 +158,37 @@ public class SubjectDAO {
 					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 		return sID;
+	}
+	
+	public int getYrLvl(int id) {
+		try {
+			openDBConnection();
+			query = "SELECT yr_level from subjects where subjID =" + id;
+			rs = st.executeQuery(query);
+			while (rs.next()) {
+				yr_lvl = rs.getInt("yr_level");
+			}
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Subject DAO) Error retrieving year level:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
+		return yr_lvl;
+	}
+	
+	public String getTag(int id) {
+		try {
+			openDBConnection();
+			query = "SELECT tag from subjects where subjID =" + id;
+			rs = st.executeQuery(query);
+			while (rs.next()) {
+				tag = rs.getString("tag");
+			}
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Subject DAO) Error retrieving year level:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
+		return tag;
 	}
 }

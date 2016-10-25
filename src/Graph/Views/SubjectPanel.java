@@ -46,7 +46,7 @@ public class SubjectPanel extends JPanel {
 		for (int i = 0; i < subjectlist.size(); i++) {
 			subject_data[i] = subjectlist.get(i).toObjectArray();
 		}
-		subject_columns = new String[] { "Id", "Decsription", "Units", "Yr Level", "Semester" };
+		subject_columns = new String[] { "Id", "Decsription", "Lec Units", "Lab Units", "Yr Level", "Semester", "Tag" };
 		
 		subjectModel = new DefaultTableModel(subject_data, subject_columns);
 
@@ -180,7 +180,7 @@ public class SubjectPanel extends JPanel {
 		format.labelFormat(lblSubjectSemester);
 		
 		String[] s = {"All", "1st", "2nd", "S"};
-		JComboBox comboBox = new JComboBox(s);
+		final JComboBox comboBox = new JComboBox(s);
 		comboBox.setBounds(481, 19, 73, 30);
 		comboBox.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {

@@ -8,19 +8,14 @@ import DAO.FacultyDAO;
 public class Faculty {
 
 	int id;
-	String fname, mname, lname, gender, phone, address;
-	String availStartTime, availEndTime;
+	double wload;
+	String fname = "", mname = "", lname = "", gender, phone, address, color;
+	String availStartTime, availEndTime, spec;
 	Date bday;
 	FacultyDAO f = new FacultyDAO();
-	private boolean available[][];
 
 	public Faculty() {
-		available = new boolean[Slot.HOUR_19_21+1][Slot.SATURDAY+1];
-        for (int i = 0; i <=Slot.HOUR_19_21; i++) {
-            for (int j = 0; j <=Slot.SATURDAY; j++) {
-                available[i][j] = true;
-            }
-        }
+
 	}
 
 	public void setID(int id) {
@@ -55,14 +50,30 @@ public class Faculty {
 		this.address = address;
 	}
 
-	public void setAvailStartTime(String availStartTime) {
-		this.availStartTime = availStartTime;
+	public void setSpecialization(String spec) {
+		this.spec = spec;
 	}
 
-	public void setAvailEndTime(String availEndTime) {
-		this.availEndTime = availEndTime;
+	public void setWload(double wload) {
+		this.wload = wload;
 	}
-
+	
+	public void setColor(String color){
+		this.color = color;
+	}
+	
+	public String getColor(){
+		return color;
+	}
+	
+	public String getFacultyColor(String name){
+		return f.getFacultyColor(name);
+	}
+	
+	public void setFacultyColor(String name, String color){
+		f.setFacultyColor(name, color);
+	}
+	
 	public int getID() {
 		return id;
 	}
@@ -103,12 +114,12 @@ public class Faculty {
 		return address;
 	}
 
-	public String getAvailStartTime() {
-		return availStartTime;
+	public String getSpecialization() {
+		return spec;
 	}
 
-	public String getAvailEndTime() {
-		return availEndTime;
+	public double getWload() {
+		return wload;
 	}
 
 	public int count() {
@@ -120,7 +131,8 @@ public class Faculty {
 	}
 
 	public Object[] toObjectArray() {
-		return new Object[] { getID(), getName(), getGender(), getBday(), getPhone(), getAddress() };
+		return new Object[] { getID(), getName(), getGender(), getBday(), getPhone(), getAddress(), getSpecialization(),
+				getWload() };
 	}
 
 	public void deleteFaculty(int id) {
@@ -137,26 +149,7 @@ public class Faculty {
 		f.addFaculty(fname, mname, lname, gender, bday, phone, address);
 	}
 
-	public boolean isAvailable(int day, int time) {
-		if (time == Slot.NULL_HOUR || day == Slot.NULL_DAY)
-			return false;
-		return available[time][day];
-	}
-	
-	public void setAvailable(int day, int time, boolean av) { available[time][day] = av; }
-
-
-	@Override
-	public int hashCode() {
-		return 31 * 1 + id;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) // Null references are not equal to this instance.
-			return false;
-		if (!obj.getClass().equals(Faculty.class)) // Neither are they instances of different classes
-			return false;
-		return (((Faculty) obj).getID() == this.id);
+	public Object[] legendFacultyArray(){
+		return new Object[] { getColor() ,getName()};
 	}
 }

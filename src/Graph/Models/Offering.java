@@ -1,18 +1,18 @@
 package Graph.Models;
 
+import java.awt.Color;
 import java.util.ArrayList;
-
 import DAO.OfferingDAO;
 
 public class Offering {
 
 	private OfferingDAO offeringDAO = new OfferingDAO();
-	//private RoomDAO r = new RoomDAO();
-	//private Subject s = new Subject();
 	private Faculty f = new Faculty();
-	private int id, class_size, degree, color;
-	private String sy, sem, faculty, subject, start_time, end_time, days, room;
-	RoomSize roomSize;
+	private Subject s = new Subject();
+	private int id, subjID, class_size, degree,blockID;
+	private double units;
+	Color colr;
+	private String sy, sem, faculty, description, room, timeslot, block_no, tag, color;
 
 	public Offering() {
 
@@ -24,6 +24,14 @@ public class Offering {
 
 	public int getID() {
 		return id;
+	}
+
+	public void setSubjID(int id) {
+		this.subjID = id;
+	}
+
+	public int getSubjID() {
+		return subjID;
 	}
 
 	public void setSY(String sy) {
@@ -42,24 +50,12 @@ public class Offering {
 		return sem;
 	}
 
-	public void setStartTime(String start_time) {
-		this.start_time = start_time;
+	public void setUnits(double units) {
+		this.units = units;
 	}
 
-	public void setEndTime(String end_time) {
-		this.end_time = end_time;
-	}
-
-	public String getTimeslot() {
-		return start_time + "-" + end_time;
-	}
-
-	public void setDay(String days) {
-		this.days = days;
-	}
-
-	public String getDay() {
-		return days;
+	public double getUnits() {
+		return units;
 	}
 
 	public void setFaculty(String fname, String mname, String lname) {
@@ -82,27 +78,39 @@ public class Offering {
 	}
 
 	public void setClassSize(int class_size) {
-		this.class_size = class_size; 
+		this.class_size = class_size;
 	}
 
 	public int getClassSize() {
 		return class_size;
 	}
 
-	public Object getStartTime() {
-		return start_time;
+	public void setBlockID(int id) {
+		this.blockID = id;
 	}
 
-	public Object getEndTime() {
-		return end_time;
+	public int getBlockID() {
+		return blockID;
 	}
 
-	public void setSubject(String subject) {
-		this.subject = subject;
+	public void setBlockNo(String string) {
+		this.block_no = string;
 	}
 
-	public String getSubject() {
-		return subject;
+	public String getBlockNo() {
+		return block_no;
+	}
+
+	public int getYrLvl(int id) {
+		return s.getYrLvl(id);
+	}
+
+	public void setDescription(String desc) {
+		this.description = desc;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 	public void setDegree(int degree) {
@@ -113,119 +121,56 @@ public class Offering {
 		return degree;
 	}
 
-	public void setAssignedColor(int color) {
+	public void setColor(String color) {
 		this.color = color;
 	}
 
-	public int getAssignedColor() {
+	public String getColor() {
 		return color;
 	}
 
-//	public ArrayList<Room> compatibleRooms() {
-//		return r.roomCanHold(class_size);
-//	}
+	public String getTag(int id) {
+		return s.getTag(id);
+	}
+
+	public void setTimeslot(String timeslot) {
+		this.timeslot = timeslot;
+	}
+
+	public String getTimeslot() {
+		return timeslot;
+	}
+
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
+
+	public String getTag() {
+		return tag;
+	}
 
 	public void setRoom(int id, int room) {
 		offeringDAO.setRoom(id, room);
 	}
 
-	// public String toString() {
-	// return this.subject + " " + this.faculty + " " + this.class_size + " " +
-	// this.timeslot;
-	// }
+	public ArrayList<Offering> getOfferings(String cond) {
+		return offeringDAO.getOffering(cond);
+	}
+
+	public void setTimeslot(int id, String timeslot) {
+		offeringDAO.setTimeslot(id, timeslot);
+	}
 
 	public Object[] toTimetableArray() {
-		return new Object[] { new Integer(getID()), getSY(), getSemester(), getStartTime(), getEndTime(), getDay(),
-				getSubject(), getFaculty(), new Integer(getClassSize()), getRoom() };
+		return new Object[] { getID(), getDescription(), getUnits(), getTimeslot(), getRoom(), getFaculty(),
+				new Integer(getClassSize()), };
 	}
 
-	public ArrayList<Offering> courseListByRoom(int room) {
-		return offeringDAO.listOfferingsByRoom(room);
-	}
-
-	public ArrayList<Offering> courseListByFaculty(int facID) {
-		return offeringDAO.listOfferingsByFaculty(facID);
-	}
-
-	public ArrayList<Offering> courseListByUnits(String sign) {
-		return offeringDAO.listOfferingsByUnits(sign);
-	}
-
-	public ArrayList<Offering> courseListWithFaculty() {
-		return offeringDAO.listCoursesWithFaculty();
+	public ArrayList<Offering> offeringByBlock(String block_no) {
+		return offeringDAO.offeringByBlock(block_no);
 	}
 
 	public ArrayList<Offering> offeringsList() {
 		return offeringDAO.listOfferings();
 	}
-
-	public ArrayList<Offering> sameFacultyList(int i) {
-		return offeringDAO.getCoursesWithSameFaculty(i);
-	}
-
-	public void addOffering(int facID, Object rm, int subjID, String schoolyear, String semester, int slots) {
-		offeringDAO.addOfferings(facID, rm, subjID, schoolyear, semester, slots);
-	}
-
-	public void editOffering(int id, int facID, Object roomID, int subjID, String schoolyear, String semester,
-			int slots) {
-		offeringDAO.editOfferings(id, facID, roomID, subjID, schoolyear, semester, slots);
-	}
-
-	public void deleteOffering(int id) {
-		offeringDAO.deleteDaysched(id);
-		offeringDAO.deleteOffering(id);
-	}
-
-	public void deleteDaysched(int id) {
-		offeringDAO.deleteDaysched(id);
-	}
-
-	public void addDaySched(int offerno, int daycode, String start_time, String end_time) {
-		offeringDAO.addDaysched(offerno, daycode, start_time, end_time);
-	}
-
-	public void editDaySched(int offerno, int daycode, String start_time, String end_time) {
-		offeringDAO.editDaysched(offerno, daycode, start_time, end_time);
-	}
-
-	public int getLastOfferno() {
-		return offeringDAO.getLastID();
-	}
-
-	public int getDaycode(String day) {
-		return offeringDAO.getDaycode(day);
-	}
-
-	public void deleteAllDayscheds() {
-		offeringDAO.deleteAllDayscheds();
-	}
-
-	public boolean fits(Room room) {
-		if (roomSize == RoomSize.LARGE && room.getSize() == RoomSize.MEDIUM)
-			return false;
-		return true;
-	}
-
-	public boolean fitsExactly(Room room) {
-		if (roomSize == room.getSize())
-			return true;
-		return false;
-	}
-
-	public boolean isTeachedBy(Faculty teacher) {
-		return (teacher.getID() == f.getFacID(faculty));
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (o == null) // Null references are not equal to this instance.
-			return false;
-		if (!o.getClass().equals(Offering.class)) // Neither are they instances
-													// of different classes
-			return false;
-		return (((Offering) o).getID() == this.id);
-	}
-	
-	
 }

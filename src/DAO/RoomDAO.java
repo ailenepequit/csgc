@@ -45,6 +45,7 @@ public class RoomDAO {
 				room.setName(rs.getString("room_desc"));
 				room.setType(rs.getString("type"));
 				room.setCapacity(rs.getInt("capacity"));
+				room.setColor(rs.getString("color"));
 				roomlist.add(room);
 			}
 			conn.close();
@@ -98,7 +99,35 @@ public class RoomDAO {
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}
-
+	
+	public void setRoomColor(String name, String color) {
+		try {
+			openDBConnection();
+			query = "UPDATE rooms SET color='" + color + "' WHERE room_desc='" + name +"'";
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			preparedStmt.executeUpdate();
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Room DAO) Error setting room color:\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	public String getRoomColor(String room) {
+		String color = "";
+		try {
+			openDBConnection();
+			query = "SELECT color FROM `rooms` WHERE room_desc= '" + room + "'";
+			rs = st.executeQuery(query);
+			while (rs.next()) {
+				color = rs.getString("color");
+			}
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Faculty DAO) Error retrieving course ID:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
+		return color;
+	}
 	public void deleteRoom(int rID) {
 		try {
 			openDBConnection();
@@ -129,11 +158,11 @@ public class RoomDAO {
 		return count;
 	}
 
-	public ArrayList<Room> roomCanHold(int class_size) {
+	public ArrayList<Room> availableRooms_Timeslot(String timeslot, int slots) {
 		ArrayList<Room> roomlist = new ArrayList<Room>();
 		try {
 			openDBConnection();
-			query = "SELECT * FROM rooms where capacity >= " + class_size;
+			query = "SELECT * from rooms where roomID NOT IN (SELECT roomID from offerings where timeslot = '"+timeslot+"' and capacity >= "+slots+")";
 			rs = st.executeQuery(query);
 
 			while (rs.next()) {
@@ -148,11 +177,37 @@ public class RoomDAO {
 			}
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Room DAO) Error retrieving room list:\n" + e.getMessage() + "\n",
+			JOptionPane.showMessageDialog(null, "(Room DAO) Error retrieving available room list:\n" + e.getMessage() + "\n",
 					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 		return roomlist;
 	}
+	
+	public ArrayList<Room> availableRooms_Timeslot(String timeslot) {
+		ArrayList<Room> roomlist = new ArrayList<Room>();
+		try {
+			openDBConnection();
+			query = "SELECT * from rooms where roomID NOT IN (SELECT roomID from offerings where timeslot = '"+timeslot+"')";
+			rs = st.executeQuery(query);
+
+			while (rs.next()) {
+				Room room = new Room();
+				Building b = new Building(rs.getInt("buildingID"));
+				room.setID(rs.getInt("roomID"));
+				room.setBuilding(b.getBname());
+				room.setName(rs.getString("room_desc"));
+				room.setType(rs.getString("type"));
+				room.setCapacity(rs.getInt("capacity"));
+				roomlist.add(room);
+			}
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Room DAO) Error retrieving available room list:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
+		return roomlist;
+	}
+
 
 	public ArrayList<Room> getLecRooms() {
 		ArrayList<Room> roomlist = new ArrayList<Room>();
@@ -173,7 +228,7 @@ public class RoomDAO {
 			}
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Room DAO) Error retrieving room list:\n" + e.getMessage() + "\n",
+			JOptionPane.showMessageDialog(null, "(Room DAO) Error retrieving lecture room list:\n" + e.getMessage() + "\n",
 					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 		return roomlist;
@@ -198,7 +253,7 @@ public class RoomDAO {
 			}
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Room DAO) Error retrieving room list:\n" + e.getMessage() + "\n",
+			JOptionPane.showMessageDialog(null, "(Room DAO) Error retrieving lab room list:\n" + e.getMessage() + "\n",
 					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 		return roomlist;

@@ -4,7 +4,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
-import Graph.Controllers.WindowController;
+import DAO.BlockSubjectsDAO;
+import DAO.OfferingDAO;
+import DAO.TimeslotDAO;
 import Graph.Models.Faculty;
 import Graph.Models.Offering;
 import Graph.Models.Room;
@@ -13,8 +15,9 @@ import Graph.Models.Subject;
 import javax.swing.JLabel;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.awt.Font;
@@ -28,27 +31,29 @@ public class HomeView extends JFrame {
 
 	private JPanel contentPane, sidebarPanel;
 	private JButton homeBtn, subjectsBtn, facultyBtn, roomsBtn, visualizationBtn;
-
-	static GraphPanel graphPanel;
-	VisualizationPanel vizPanel;
+	static JLabel lblGeneratedTimetableFor;
+	JComboBox<String> list;
+	
 	RoomPanel roomsPanel;
 	SubjectPanel subjectsPanel;
 	FacultyPanel facultyPanel;
 	static OfferingPanel offeringPanel;
 	static OfferingFormPanel formPanel;
-
+	
 	Offering offering = new Offering();
+	OfferingDAO o = new OfferingDAO();
 	Subject subject = new Subject();
 	Room room = new Room();
 	Faculty faculty = new Faculty();
-
-	ArrayList<Subject> subjectList = subject.subjectList("All");
-	int N = subjectList.size();
-
-	WindowController w;
+	TimeslotDAO t = new TimeslotDAO();
+	BlockSubjectsDAO b = new BlockSubjectsDAO();
+	
 	Formatter format = new Formatter();
 
 	public HomeView() {
+		o.dropTableOfferings();
+		t.dropTableAvailableRoomTimeslot();
+		b.dropTableBlockSubjects();
 		contentPane = new JPanel();
 		contentPane.setForeground(new Color(47, 79, 79));
 		contentPane.setBackground(new Color(204, 204, 204));
@@ -75,24 +80,11 @@ public class HomeView extends JFrame {
 		roomsPanel = new RoomPanel();
 		subjectsPanel = new SubjectPanel();
 		facultyPanel = new FacultyPanel();
-		graphPanel = new GraphPanel(this.getGraphics());
-		vizPanel = new VisualizationPanel();
-
-		contentPane.add(graphPanel);
 		contentPane.add(offeringPanel);
 		contentPane.add(formPanel);
 		contentPane.add(roomsPanel);
 		contentPane.add(subjectsPanel);
 		contentPane.add(facultyPanel);
-
-		contentPane.add(vizPanel);
-		vizPanel.setVisible(false);
-		addEdges();
-	}
-	
-	public void graph(){
-		graphPanel.update();
-		graphPanel.repaint();
 	}
 
 	public void headerComponents() {
@@ -104,13 +96,13 @@ public class HomeView extends JFrame {
 		lblAbsked.setFont(new Font("SansSerif", Font.BOLD, 22));
 		lblAbsked.setBounds(0, 0, 242, 58);
 
-		JLabel lblGeneratedTimetableFor = new JLabel("List of Offerings");
+		lblGeneratedTimetableFor = new JLabel("List of Offerings");
 		lblGeneratedTimetableFor.setVisible(false);
 		lblGeneratedTimetableFor.setBackground(new Color(46, 139, 87));
 		lblGeneratedTimetableFor.setForeground(new Color(0, 0, 0));
 		lblGeneratedTimetableFor.setOpaque(true);
-		lblGeneratedTimetableFor.setFont(new Font("SansSerif", Font.BOLD, 15));
-		lblGeneratedTimetableFor.setBounds(316, 18, 378, 30);
+		lblGeneratedTimetableFor.setFont(new Font("SansSerif", Font.BOLD, 18));
+		lblGeneratedTimetableFor.setBounds(264, 18, 550, 30);
 
 		JButton logoutBtn = new JButton("");
 		logoutBtn.setIcon(new ImageIcon(format.imagesPath + "logout.png"));
@@ -215,11 +207,14 @@ public class HomeView extends JFrame {
 				setSideBarButtonsUnselectedFormat();
 				sideBarButtonSelected(visualizationBtn);
 				setPanelsVisibleToFalse();
-				//graphPanel.setVisible(true);
-//				graphPanel.update();
-//				graphPanel.repaint();
-				vizPanel.setVisible(true);
-				vizPanel.setGraphData(subject.count(), room.count(), faculty.count());
+//				vizPanel.setVisible(true);
+//				vizPanel.setGraphData(subject.count(), room.count(), faculty.count());
+//				GraphFrame g = new GraphFrame(o.listOfferings());
+//				g.subjectGraph();
+//				g.setVisible(true);
+				
+				GraphColoringView g = new GraphColoringView();
+				g.setVisible(true);
 			}
 		});
 
@@ -229,29 +224,6 @@ public class HomeView extends JFrame {
 		sidebarPanel.add(facultyBtn);
 		sidebarPanel.add(roomsBtn);
 		sidebarPanel.add(visualizationBtn);
-	}
-
-	public void addEdges() {
-		String yr = "";
-		for (int i = 0; i < N; i++) {
-			int yrLvl = subjectList.get(i).getYrLvl();
-			switch (yrLvl) {
-			case 1:
-				yr = "1st yr";
-				break;
-			case 2:
-				yr = "2nd yr";
-				break;
-			case 3:
-				yr = "3rd yr";
-				break;
-			case 4:
-				yr = "4th yr";
-				break;
-			}
-			graphPanel.addEdge(subjectList.get(i).getSubject(), yr, yrLvl);
-			vizPanel.logArea.append(graphPanel.display(subjectList.get(i).getSubject(), yr, yrLvl));
-		}
 	}
 
 	public void sidebarButtonFormat(JButton button, String icon) {
@@ -289,7 +261,11 @@ public class HomeView extends JFrame {
 		roomsPanel.setVisible(false);
 		subjectsPanel.setVisible(false);
 		facultyPanel.setVisible(false);
-		graphPanel.setVisible(false);
-		vizPanel.setVisible(false);
+	}
+	
+
+	
+	public void comboBoxList(String node){
+		
 	}
 }

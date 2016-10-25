@@ -59,11 +59,11 @@ public class Formatter {
 	}
 	
 	public void tableFormat(JTable t) {
-		t.setRowSelectionAllowed(true);
+		//t.setRowSelectionAllowed(true);
 		t.setGridColor(Color.lightGray);
-		t.setRowHeight(21);
+		t.setRowHeight(23);
 		t.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 12));
-		t.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		t.setFont(new Font("SansSerif", Font.PLAIN, 13));
 		t.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		t.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		t.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);

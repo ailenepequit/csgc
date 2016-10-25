@@ -34,7 +34,7 @@ public class FacultyDAO {
 	public int getID(String name) {
 		try {
 			openDBConnection();
-			query = "SELECT * FROM `faculty` WHERE CONCAT(fname, ' ', mname, ' ', lname) LIKE '" + name + "'";
+			query = "SELECT facID FROM `faculty` WHERE CONCAT(fname, ' ', mname, ' ', lname) LIKE '" + name + "'";
 			rs = st.executeQuery(query);
 			while (rs.next()) {
 				fID = rs.getInt("facID");
@@ -46,12 +46,39 @@ public class FacultyDAO {
 		}
 		return fID;
 	}
-
+	public void setFacultyColor(String name, String color) {
+		try {
+			openDBConnection();
+			query = "UPDATE faculty SET color='" + color + "' WHERE CONCAT(fname, ' ', mname, ' ', lname) LIKE '" + name +"'";
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			preparedStmt.executeUpdate();
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Faculty DAO) Error setting faculty color:\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	public String getFacultyColor(String name) {
+		String color = "";
+		try {
+			openDBConnection();
+			query = "SELECT color FROM `faculty` WHERE CONCAT(fname, ' ', mname, ' ', lname) LIKE '" + name + "'";
+			rs = st.executeQuery(query);
+			while (rs.next()) {
+				color = rs.getString("color");
+			}
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Faculty DAO) Error retrieving course ID:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
+		return color;
+	}
 	public ArrayList<Faculty> facultyList() {
 		ArrayList<Faculty> faclist = new ArrayList<Faculty>();
 		try {
 			openDBConnection();
-			query = "SELECT facID, fname, mname, lname, gender, bday, phone, address from faculty";
+			query = "SELECT * from faculty";
 			rs = st.executeQuery(query);
 			while (rs.next()) {
 				Faculty faculty = new Faculty();
@@ -63,6 +90,9 @@ public class FacultyDAO {
 				faculty.setBday(rs.getDate("bday"));
 				faculty.setPhone(rs.getString("phone"));
 				faculty.setAddress(rs.getString("address"));
+				faculty.setSpecialization(rs.getString("specialization"));
+				faculty.setWload(rs.getDouble("wload"));
+				faculty.setColor(rs.getString("color"));
 				faclist.add(faculty);
 			}
 			conn.close();
@@ -134,5 +164,34 @@ public class FacultyDAO {
 			JOptionPane.showMessageDialog(null, "(Faculty DAO) Error adding faculty:\n" + e.getMessage() + "\n",
 					"Error", JOptionPane.ERROR_MESSAGE);
 		}
+	}
+	
+	public ArrayList<Faculty> availableFaculty_Timeslot(String timeslot) {
+		ArrayList<Faculty> faclist = new ArrayList<Faculty>();
+		try {
+			openDBConnection();
+			query = "SELECT * from faculty where facID NOT IN (SELECT DISTINCT faculty.facID AS facID from faculty LEFT OUTER JOIN offerings USING (facID) WHERE offerings.timeslot = '"+timeslot+"')";
+			rs = st.executeQuery(query);
+			while (rs.next()) {
+				Faculty faculty = new Faculty();
+				faculty.setID(rs.getInt("facID"));
+				faculty.setFname(rs.getString("fname"));
+				faculty.setMname(rs.getString("mname"));
+				faculty.setLname(rs.getString("lname"));
+				faculty.setGender(rs.getString("gender"));
+				faculty.setBday(rs.getDate("bday"));
+				faculty.setPhone(rs.getString("phone"));
+				faculty.setAddress(rs.getString("address"));
+				faculty.setSpecialization(rs.getString("specialization"));
+				faculty.setWload(rs.getDouble("wload"));
+				faclist.add(faculty);
+			}
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null,
+					"(Faculty DAO) Error retrieving faculty list:\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		return faclist;
 	}
 }

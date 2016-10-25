@@ -1,10 +1,7 @@
-package Graph.Models;
+
 
 public class BipartiteMatching {
     // M is number of applicants and N is number of jobs
-	private Subject subject = new Subject();
-	private Room room = new Room();
-	private Faculty faculty = new Faculty();
 	
     static final int M = 6;
     static final int N = 6;
