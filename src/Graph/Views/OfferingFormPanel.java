@@ -25,12 +25,11 @@ import Graph.Models.Room;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
 import javax.swing.border.TitledBorder;
-import javax.swing.UIManager;
 
 @SuppressWarnings({ "rawtypes", "serial", "unchecked" })
 public class OfferingFormPanel extends JPanel {
 
-	private int row, offerID, slots;
+	private int row, offerID;
 	String desc, p_timeslot, p_faculty, p_room;
 	double units;
 
@@ -64,20 +63,21 @@ public class OfferingFormPanel extends JPanel {
 	Object[][] offerings_data;
 	String[] name;
 	private JTextField subjectField;
+	private JTextField slotsField;
 
 	public OfferingFormPanel() {
 		setVisible(false);
 		setBackground(Color.WHITE);
 		setBounds(252, 72, 1002, 587);
-		setLayout(null);
 
 		panel = new JPanel();
-		panel.setBorder(new TitledBorder(null, "Update Offering", TitledBorder.CENTER, TitledBorder.TOP, null, null));
 		panel.setBounds(102, 51, 449, 467);
+		panel.setBorder(new TitledBorder(null, "Update Offering", TitledBorder.CENTER, TitledBorder.TOP, null, null));
 		panel.setLayout(null);
-
+		
 		formPanelButtons();
 		formPanelLabels();
+		setLayout(null);
 	
 		add(panel);
 	
@@ -87,23 +87,43 @@ public class OfferingFormPanel extends JPanel {
 		subjectField.setBounds(121, 63, 281, 25);
 		panel.add(subjectField);
 		subjectField.setColumns(10);
-
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setViewportBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Available Time/Day/Room", TitledBorder.CENTER, TitledBorder.ABOVE_TOP, null, new Color(0, 0, 0)));
-		scrollPane.setBounds(648, 51, 276, 467);
-		add(scrollPane);
-
-		JList list = new JList();
-		list.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		list.setBorder(
-				null);
-		scrollPane.setViewportView(list);
 		
-		ArrayList<String> avail_timeslots = t.getAllAvailableTimeslots();
+		JLabel lblSlots = new JLabel("Slots");
+		lblSlots.setBounds(44, 110, 46, 14);
+		panel.add(lblSlots);
+		
+		slotsField = new JTextField();
+		slotsField.setBounds(121, 107, 46, 20);
+		panel.add(slotsField);
+		slotsField.setColumns(10);
+	}
+	
+	public void displayAvailableTimeslots(){
+		if(listModel.isEmpty() == false)
+			listModel.removeAllElements();
+		ArrayList<String> avail_timeslots = new ArrayList<String>(t.getAllAvailableTimeslots());
+		System.out.println("AvailTimeslot");
 		for (String a : avail_timeslots) {
 			listModel.addElement(a);
+			System.out.println(a);
 		}
-		list.setModel(listModel);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(704, 51, 243, 467);
+		add(scrollPane);
+		
+		JList<String> list = new JList<String>(listModel);
+		list.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		list.setBorder(new TitledBorder(null, "Available Time/Day/Room", TitledBorder.CENTER, TitledBorder.TOP, null, null));
+		scrollPane.setViewportView(list);
+	}
+	
+	public void clearFields(){
+		fac.removeAllElements();
+		rm.removeAllElements();
+		td.removeAllElements();
+//		timeDayComboBox.setSelectedItem(-1);
+		listModel.removeAllElements();
 	}
 
 	public void setFormData(int row, int offerID, String desc, double units, String timeslot, String room, String fac, int slots) {
@@ -111,12 +131,11 @@ public class OfferingFormPanel extends JPanel {
 		this.offerID = offerID;
 		this.desc = desc;
 		this.units = units;
-		this.slots = slots;
 		this.p_faculty = fac;
 		this.p_room = room;
 		this.p_timeslot = timeslot;
 		subjectField.setText(desc);
-		System.out.println(row + " " + offerID + " " + desc + " " + units + " " + timeslot + " " + room + " " + fac + " " + slots);
+		slotsField.setText(Integer.toString(slots));
 		timeDayComboBox();
 	}
 
@@ -140,8 +159,12 @@ public class OfferingFormPanel extends JPanel {
 		});
 		btnEditOffering.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String facultyname = facultyComboBox.getSelectedItem().toString();
-				String roomname = roomComboBox.getSelectedItem().toString();
+				String facultyname = "  "; 
+				String roomname = "";
+//				if(roomComboBox.isVisible() == true){
+					facultyname = facultyComboBox.getSelectedItem().toString();
+				 	roomname = roomComboBox.getSelectedItem().toString();
+//				}
 				String selected_time = timeDayComboBox.getSelectedItem().toString();
 				HomeView.offeringPanel.updateOfferingFromTable(row, selected_time, facultyname, roomname);
 				o.updateOfferingTimeslot(offerID, selected_time, r.getID(roomname), f.getID(facultyname));
@@ -149,6 +172,8 @@ public class OfferingFormPanel extends JPanel {
 				t.insertAvailableTimeslot(r.getID(p_room), p_timeslot);
 				HomeView.offeringPanel.setVisible(true);
 				setVisible(false);
+				clearFields();
+				displayAvailableTimeslots();
 			}
 		});
 		panel.add(btnEditOffering);
@@ -185,7 +210,7 @@ public class OfferingFormPanel extends JPanel {
 
 	public void timeDayComboBox() {
 		if (p_faculty.equals("") || units > 2.0)
-			timeslotList = t.getAvailableTimeslots("MTh", "TuF");
+			timeslotList = new ArrayList<String>(t.getAvailableTimeslots("MTh", "TuF"));
 		else
 			timeslotList = t.getAvailableTimeslots("W", "S");
 		
@@ -198,7 +223,6 @@ public class OfferingFormPanel extends JPanel {
 		timeDayComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String t = timeDayComboBox.getSelectedItem().toString();
-				System.out.println("."+p_faculty+".");
 				if(!p_faculty.equals("  ")){
 					roomComboBox(t);
 					facultyComboBox(t);	
@@ -211,7 +235,7 @@ public class OfferingFormPanel extends JPanel {
 
 	public void facultyComboBox(String timeslot) {
 		fac.removeAllElements();
-		facultylist = f.availableFaculty_Timeslot(timeslot);
+		facultylist = new ArrayList<Faculty>(f.availableFaculty_Timeslot(timeslot));
 		for (int i = 0; i < facultylist.size(); i++) {
 			fac.addElement(facultylist.get(i).getName());
 		}
@@ -225,7 +249,13 @@ public class OfferingFormPanel extends JPanel {
 
 	public void roomComboBox(String timeslot) {
 		rm.removeAllElements();
-		roomlist = r.availableRooms_Timeslot(timeslot, slots);
+		String type = "";
+		if(desc.contains("LAB"))
+			type = "Laboratory";
+		else
+			type = "Lecture";
+		
+		roomlist = new ArrayList<Room>(r.availableRooms_Timeslot(timeslot, type));
 		for (int i = 0; i < roomlist.size(); i++) {
 			rm.addElement(roomlist.get(i).getName());
 		}

@@ -32,10 +32,10 @@ public class SubjectDAO {
 	}
 
 	public ArrayList<Subject> listSubjects(String sem, int yr) {
-		if(sem.equals("All"))
+		if (sem.equals("All"))
 			query = "SELECT * FROM subjects";
-		else{
-			String con = " where semester='"+ sem +"'" + "and yr_level="+yr;
+		else {
+			String con = " where semester='" + sem + "'" + "and yr_level=" + yr;
 			query = "SELECT * FROM subjects" + con;
 		}
 		ArrayList<Subject> subjectList = new ArrayList<Subject>();
@@ -63,9 +63,36 @@ public class SubjectDAO {
 		return subjectList;
 	}
 
+	public ArrayList<Subject> subjectsBySem(String sem) {
+		ArrayList<Subject> subjectList = new ArrayList<Subject>();
+		try {
+			openDBConnection();
+			query = "SELECT * FROM subjects where semester='" + sem + "'";
+			rs = st.executeQuery(query);
+			while (rs.next()) {
+				Subject subject = new Subject();
+				subject.setID(rs.getInt("subjID"));
+				subject.setSubject(rs.getString("course_code"));
+				subject.setDescription(rs.getString("description"));
+				subject.setLecUnits(rs.getDouble("lec_units"));
+				subject.setLabUnits(rs.getDouble("lab_units"));
+				subject.setYrLvl(rs.getInt("yr_level"));
+				subject.setSemester(rs.getString("semester"));
+				subject.setTag(rs.getString("tag"));
+				subjectList.add(subject);
+			}
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null,
+					"(Subject DAO) Error retrieving subject list:\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		return subjectList;
+	}
+
 	public int countSubjects() {
 		int count = 0;
-		
+
 		try {
 			openDBConnection();
 			query = "SELECT Count(*) FROM subjects";
@@ -132,7 +159,7 @@ public class SubjectDAO {
 				Subject subject = new Subject();
 				subject.setID(rs.getInt("subjID"));
 				subject.setSubject(rs.getString("description"));
-				//subject.setUnits(rs.getDouble("units"));
+				// subject.setUnits(rs.getDouble("units"));
 				subjectList.add(subject);
 			}
 			conn.close();
@@ -159,7 +186,7 @@ public class SubjectDAO {
 		}
 		return sID;
 	}
-	
+
 	public int getYrLvl(int id) {
 		try {
 			openDBConnection();
@@ -175,7 +202,7 @@ public class SubjectDAO {
 		}
 		return yr_lvl;
 	}
-	
+
 	public String getTag(int id) {
 		try {
 			openDBConnection();
@@ -186,9 +213,88 @@ public class SubjectDAO {
 			}
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Subject DAO) Error retrieving year level:\n" + e.getMessage() + "\n",
+			JOptionPane.showMessageDialog(null, "(Subject DAO) Error retrieving subject tag:\n" + e.getMessage() + "\n",
 					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 		return tag;
+	}
+	public void dropTableSubjectRoomMatching(){
+		try {
+			openDBConnection();
+			query = "Drop table IF EXISTS subject_room_matchings";
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+			conn.close();
+			createTableSubjectRoomMatching();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Offering DAO) Error dropping table subject_room_matching:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	public void createTableSubjectRoomMatching(){
+		try {
+			openDBConnection();
+			query = "Create table subject_room_matchings (id int PRIMARY KEY AUTO_INCREMENT, subjID int references subject(subjID), roomID int references rooms(roomID))";
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Offering DAO) Error creating table subject_room_matchings:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	public void dropTableSubjectFacultyMatching(){
+		try {
+			openDBConnection();
+			query = "Drop table IF EXISTS subject_faculty_matchings";
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+			conn.close();
+			createTableSubjectFacultyMatching();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Offering DAO) Error dropping table subject_faculty_matching:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	public void createTableSubjectFacultyMatching(){
+		try {
+			openDBConnection();
+			query = "Create table subject_faculty_matchings (id int PRIMARY KEY AUTO_INCREMENT, subjID int references subject(subjID), facID int references faculty(facID))";
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Offering DAO) Error creating table subject_room_matchings:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	public void subjectRoomMatch(int subject, int room) {
+		try {
+			openDBConnection();
+			query = "INSERT INTO subject_room_matchings(subjID, roomID) VALUES (" + subject + ", "+room+")";
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			preparedStmt.execute();
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Subject DAO) Error matching subject to room:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	public void subjectFacultyMatch(int subject, int faculty) {
+		try {
+			openDBConnection();
+			query = "INSERT INTO subject_faculty_matchings(subjID, facID) VALUES (" + subject + ", "+faculty+")";
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			preparedStmt.execute();
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Subject DAO) Error matching subject to faculty:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 }

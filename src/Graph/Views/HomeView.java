@@ -206,15 +206,10 @@ public class HomeView extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				setSideBarButtonsUnselectedFormat();
 				sideBarButtonSelected(visualizationBtn);
-				setPanelsVisibleToFalse();
-//				vizPanel.setVisible(true);
-//				vizPanel.setGraphData(subject.count(), room.count(), faculty.count());
-//				GraphFrame g = new GraphFrame(o.listOfferings());
-//				g.subjectGraph();
-//				g.setVisible(true);
+				//setPanelsVisibleToFalse();
 				
-				GraphColoringView g = new GraphColoringView();
-				g.setVisible(true);
+				offeringPanel.sv.setVisible(true);
+			//	s.setVisible(true);
 			}
 		});
 
@@ -263,9 +258,4 @@ public class HomeView extends JFrame {
 		facultyPanel.setVisible(false);
 	}
 	
-
-	
-	public void comboBoxList(String node){
-		
-	}
 }

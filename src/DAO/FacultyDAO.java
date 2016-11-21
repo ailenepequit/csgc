@@ -69,7 +69,7 @@ public class FacultyDAO {
 			}
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Faculty DAO) Error retrieving course ID:\n" + e.getMessage() + "\n",
+			JOptionPane.showMessageDialog(null, "(Faculty DAO) Error retrieving faculty color:\n" + e.getMessage() + "\n",
 					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 		return color;

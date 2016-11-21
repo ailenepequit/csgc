@@ -287,4 +287,21 @@ public class OfferingDAO {
 					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
+	
+	public int countTimeslot(String timeslot) {
+		int count = 0;
+		try {
+			openDBConnection();
+			query = "SELECT Count(*) FROM offerings where timeslot= '"+timeslot+"'";
+			rs = st.executeQuery(query);
+			while (rs.next()) {
+				count = rs.getInt(1);
+			}
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Room DAO) Error room count:\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		return count;
+	}
 }

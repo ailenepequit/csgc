@@ -123,7 +123,7 @@ public class RoomDAO {
 			}
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Faculty DAO) Error retrieving course ID:\n" + e.getMessage() + "\n",
+			JOptionPane.showMessageDialog(null, "(Room DAO) Error retrieving room color:\n" + e.getMessage() + "\n",
 					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 		return color;
@@ -141,11 +141,11 @@ public class RoomDAO {
 		}
 	}
 
-	public int countRooms() {
+	public int countRooms(String capacity) {
 		int count = 0;
 		try {
 			openDBConnection();
-			query = "SELECT Count(*) FROM rooms";
+			query = "SELECT Count(*) FROM rooms where " + capacity;
 			rs = st.executeQuery(query);
 			while (rs.next()) {
 				count = rs.getInt(1);
@@ -158,11 +158,11 @@ public class RoomDAO {
 		return count;
 	}
 
-	public ArrayList<Room> availableRooms_Timeslot(String timeslot, int slots) {
+	public ArrayList<Room> availableRooms_Timeslot(String timeslot, String type) {
 		ArrayList<Room> roomlist = new ArrayList<Room>();
 		try {
 			openDBConnection();
-			query = "SELECT * from rooms where roomID NOT IN (SELECT roomID from offerings where timeslot = '"+timeslot+"' and capacity >= "+slots+")";
+			query = "SELECT * from rooms where roomID NOT IN (SELECT roomID from offerings where timeslot = '"+timeslot+"') and type = '"+type+"'";
 			rs = st.executeQuery(query);
 
 			while (rs.next()) {

@@ -78,9 +78,12 @@ public class OfferingPanel extends JPanel {
 	double units;
 	private JTable table;
 
+	static Scheduler s;
+	Statistics sv;
+	
 	public OfferingPanel() {
 		setBounds(252, 73, 1002, 586);
-
+		
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(259, 68, 733, 460);
 		scrollPane.getViewport().setBackground(Color.WHITE);
@@ -91,8 +94,9 @@ public class OfferingPanel extends JPanel {
 		printBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String title = "Schedule for SY " + sy + " " + sem + " Term";
-				if(!comboBox.getSelectedItem().toString().equals("All")) 
-					title = "Schedule for " + comboBox.getSelectedItem().toString()+ " " + listBy.getSelectedValue()+" SY " + sy + " " + sem + " Term";
+				if (!comboBox.getSelectedItem().toString().equals("All"))
+					title = "Schedule for " + comboBox.getSelectedItem().toString() + " " + listBy.getSelectedValue()
+							+ " SY " + sy + " " + sem + " Term";
 				TablePrinter t = new TablePrinter(title, table);
 				t.setVisible(true);
 			}
@@ -122,8 +126,10 @@ public class OfferingPanel extends JPanel {
 				int i = table.getSelectedRow();
 				offeringID = Integer.parseInt(table.getValueAt(i, 0).toString());
 				HomeView.formPanel.setVisible(true);
-				HomeView.formPanel.setFormData(i, offeringID, desc, units, timeslot, selected_room, selected_fac, slots);
+				HomeView.formPanel.setFormData(i, offeringID, desc, units, timeslot, selected_room, selected_fac,
+						slots);
 				HomeView.formPanel.btnEditOffering.setVisible(true);
+				HomeView.formPanel.displayAvailableTimeslots();
 			}
 		});
 
@@ -134,7 +140,7 @@ public class OfferingPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				listModel.removeAllElements();
 				comboBox.setSelectedItem("All");
-			
+
 				showOption();
 				sortList("All");
 				setTableModel("All");
@@ -166,7 +172,7 @@ public class OfferingPanel extends JPanel {
 		});
 
 		setLayout(null);
-		String[] sortBy = { "All", "Block", "Room", "Faculty"};
+		String[] sortBy = { "All", "Block", "Room", "Faculty" };
 		for (String s : sortBy)
 			cb.addElement(s);
 		comboBox = new JComboBox<String>(cb);
@@ -181,38 +187,41 @@ public class OfferingPanel extends JPanel {
 			}
 		});
 		comboBox.setBounds(10, 68, 125, 23);
-		
+
 		btnViewTimetable = new JButton("View Timetable");
 		format.buttonFormat(btnViewTimetable, "");
 		btnViewTimetable.setBounds(664, 12, 104, 30);
-		btnViewTimetable.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		btnViewTimetable.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				String sched = comboBox.getSelectedItem().toString();
 				ScheduleView s = null;
-				if(sched.equals("Block")){
-					s = new ScheduleView("Block: "+listBy.getSelectedValue().toString() + " School Year: " + sy + " Semester: " + sem,block_subjects);
+				if (sched.equals("Block")) {
+					s = new ScheduleView("Block: " + listBy.getSelectedValue().toString() + " School Year: " + sy
+							+ " Semester: " + sem, block_subjects);
 				}
-				if(sched.equals("Room")){
-					s = new ScheduleView("Room: " +listBy.getSelectedValue().toString() +  "School Year: " + sy + " Semester: " + sem,rooms);
+				if (sched.equals("Room")) {
+					s = new ScheduleView("Room: " + listBy.getSelectedValue().toString() + "School Year: " + sy
+							+ " Semester: " + sem, rooms);
 				}
-				if(sched.equals("Faculty")){
-					s = new ScheduleView("Name: "+listBy.getSelectedValue().toString() + " School Year: " + sy + " Semester: " + sem,fac);
+				if (sched.equals("Faculty")) {
+					s = new ScheduleView("Name: " + listBy.getSelectedValue().toString() + " School Year: " + sy
+							+ " Semester: " + sem, fac);
 				}
 				s.setVisible(true);
 			}
 		});
-		
+
 		JButton btnGraphColoring = new JButton("Graph Coloring");
 		btnGraphColoring.setBounds(545, 12, 104, 30);
 		format.buttonFormat(btnGraphColoring, "");
-		btnGraphColoring.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		btnGraphColoring.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				GraphColoringView g = new GraphColoringView();
 				g.setVisible(true);
 				g.showOption();
 			}
 		});
-		
+
 		add(printBtn);
 		add(scrollPane);
 		add(btnDeleteOffering);
@@ -242,15 +251,15 @@ public class OfferingPanel extends JPanel {
 			}
 			break;
 		case "Faculty":
-			fac = offering.getOfferings(
-					"offerings.facID = '" + faculty.getFacID(listBy.getSelectedValue().toString()) + "'");
+			fac = offering
+					.getOfferings("offerings.facID = '" + faculty.getFacID(listBy.getSelectedValue().toString()) + "'");
 			offerings_data = new Object[fac.size()][];
 			for (int i = 0; i < fac.size(); i++) {
 				offerings_data[i] = fac.get(i).toTimetableArray();
 			}
 			break;
 		case "All":
-			courselist = offering.offeringsList();
+			courselist = new ArrayList<Offering>(offering.offeringsList());
 			offerings_data = new Object[courselist.size()][];
 			for (int i = 0; i < courselist.size(); i++) {
 				offerings_data[i] = courselist.get(i).toTimetableArray();
@@ -258,7 +267,7 @@ public class OfferingPanel extends JPanel {
 			btnViewTimetable.setEnabled(false);
 			break;
 		}
-		offerings_columns = new String[] { "Id", "Description", "Units", "Time/Day", "Room", "Faculty", "Class Size"};
+		offerings_columns = new String[] { "Id", "Description", "Units", "Time/Day", "Room", "Faculty", "Class Size" };
 		tableComponents(offerings_data, offerings_columns);
 		scrollPane.setViewportView(table);
 	}
@@ -287,8 +296,8 @@ public class OfferingPanel extends JPanel {
 
 	public void showOption() {
 		JComboBox<String> syCB = new JComboBox<String>();
-		syCB.setModel(new DefaultComboBoxModel<String>(new String[] { "2016-2017", "2017-2018", "2018-2019", "2019-2020",
-				"2021-2022", "2022-2023", "2023-2024", "2024-2025", "2025-2026" }));
+		syCB.setModel(new DefaultComboBoxModel<String>(new String[] { "2016-2017", "2017-2018", "2018-2019",
+				"2019-2020", "2021-2022", "2022-2023", "2023-2024", "2024-2025", "2025-2026" }));
 		JComboBox<String> semCB = new JComboBox<String>();
 		semCB.setModel(new DefaultComboBoxModel<String>(new String[] { "1st", "2nd", "S" }));
 
@@ -304,10 +313,25 @@ public class OfferingPanel extends JPanel {
 
 			sem = semCB.getSelectedItem().toString();
 			sy = syCB.getSelectedItem().toString();
-			Scheduler s = new Scheduler(syCB.getSelectedItem().toString(), semCB.getSelectedItem().toString());
+			s = new Scheduler(syCB.getSelectedItem().toString(), semCB.getSelectedItem().toString());
 			s.start();
-			JOptionPane.showMessageDialog(null, "Successfully Generated Offering Schedule.", "Completed",
-					JOptionPane.INFORMATION_MESSAGE);
+			sv = new Statistics();
+			sv.ids_T(s.ids_T());
+			sv.ids_R(s.ids_R());
+			sv.ids_F(s.ids_F());
+			sv.time_exec_T(s.time_exec_T());
+			sv.time_exec_R(s.time_exec_R());
+			sv.time_exec_F(s.time_exec_F());
+			sv.create();
+			
+			courselist = offering.offeringsList();
+			JOptionPane.showMessageDialog(null,
+					"Successfully Generated Offering Schedule. " 
+							+ "\n\nTotal subjects scheduled: " + courselist.size() + "\n\nTimeslot Assignment: \t"
+							+ s.timeslotAssignmentExec() + " s" + "\nRoom Assignment: \t" + s.roomAssignmentExec()
+							+ " s" + "\nFaculty Assignment: \t" + s.facultyAssignmentExec() + " s"
+							+ "\n\nTotal Time Execution: \t" + s.timeExecution() + " seconds",
+					"Completed", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
@@ -381,8 +405,8 @@ public class OfferingPanel extends JPanel {
 					btnDeleteOffering.setEnabled(true);
 					int i = table.getSelectedRow();
 					offeringID = Integer.parseInt(table.getValueAt(i, 0).toString());
-	
-					if (offeringModel.getValueAt(i, 5)== null)
+
+					if (offeringModel.getValueAt(i, 5) == null)
 						selected_fac = "";
 					else
 						selected_fac = offeringModel.getValueAt(i, 5).toString();
@@ -395,7 +419,7 @@ public class OfferingPanel extends JPanel {
 					units = Double.parseDouble(offeringModel.getValueAt(i, 2).toString());
 					timeslot = offeringModel.getValueAt(i, 3).toString();
 					slots = Integer.parseInt(offeringModel.getValueAt(i, 6).toString());
-					
+
 				} catch (Exception ex) {
 					System.out.println(ex);
 				}

@@ -21,11 +21,13 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import DAO.SubjectDAO;
 import Graph.Models.Subject;
 
 @SuppressWarnings({ "rawtypes", "serial", "unchecked" })
 public class SubjectPanel extends JPanel {
 
+	SubjectDAO sDAO = new SubjectDAO();
 	Subject subject = new Subject();
 	ArrayList<Subject> subjectlist;
 	private JTable subjectTable;
@@ -185,7 +187,10 @@ public class SubjectPanel extends JPanel {
 		comboBox.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				String sem = comboBox.getSelectedItem().toString();
-				subjectlist = subject.subjectList(sem);
+				if(sem.equals("All"))
+					subjectlist = subject.subjectList("All");
+				else
+					subjectlist = sDAO.subjectsBySem(sem);
 				subject_data = new Object[subjectlist.size()][];
 				for (int i = 0; i < subjectlist.size(); i++) {
 					subject_data[i] = subjectlist.get(i).toObjectArray();
