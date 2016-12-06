@@ -8,7 +8,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -16,29 +15,36 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import Graph.Models.Faculty;
+import javax.swing.border.TitledBorder;
+import javax.swing.UIManager;
+import java.awt.GridLayout;
+import org.eclipse.wb.swing.FocusTraversalOnArray;
 
-@SuppressWarnings({ "rawtypes", "serial", "unchecked" })
+import DAO.FacultyDAO;
+
+@SuppressWarnings({ "rawtypes", "serial"})
 public class FacultyPanel extends JPanel {
 
 	private int facultyID;
 	private JComboBox genderComboBox;
-	private JButton btnAddFaculty, btnUpdateFaculty, btnDeleteFaculty, btnViewFacultyTimetable;
+	private JButton btnAddFaculty, btnUpdateFaculty, btnDeleteFaculty;
 	Faculty faculty = new Faculty();
+	FacultyDAO fDAO = new FacultyDAO();
 	ArrayList<Faculty> facultylist = faculty.facultyList();
 	private JTable facultyTable;
 	private JTextField fnameField, mnameField, lnameField, bdayField, phoneField, addressField;
 	Formatter format = new Formatter();
 	DefaultTableModel facultyModel;
+	private JTextField specField;
 
 	public FacultyPanel() {
 		setBackground(Color.WHITE);
-		String[] faculty_columns = new String[] { "Id", "Name", "Gender", "Bday", "Phone", "Address" };
+		String[] faculty_columns = new String[] { "Id", "Name", "Specialization", "Load" };
 
 		Object[][] faculty_data = new Object[facultylist.size()][];
 		for (int i = 0; i < facultylist.size(); i++) {
@@ -51,73 +57,41 @@ public class FacultyPanel extends JPanel {
 			}
 		};
 
-		String[] gender = { "Male", "Female" };
+		//String[] gender = { "Male", "Female" };
 
 		setBounds(253, 73, 1001, 586);
 		setVisible(false);
 		setLayout(null);
 
 		JPanel facultyFormPanel = new JPanel();
-		facultyFormPanel.setBounds(593, 68, 376, 400);
-		facultyFormPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		facultyFormPanel.setLayout(null);
-
-		JLabel lblFacultyInformationDetails = new JLabel("Faculty Information Details");
-		lblFacultyInformationDetails.setHorizontalAlignment(SwingConstants.CENTER);
-		lblFacultyInformationDetails.setBounds(96, 26, 201, 14);
+		facultyFormPanel.setBounds(593, 52, 376, 416);
+		facultyFormPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Faculty Information",
+				TitledBorder.CENTER, TitledBorder.TOP, null, new Color(0, 0, 0)));
 
 		JLabel lblFname = new JLabel("Firstname");
-		lblFname.setBounds(37, 68, 61, 14);
 		format.labelFormat(lblFname);
 
-		JLabel lblMiddlename = new JLabel("Middlename");
-		lblMiddlename.setBounds(37, 113, 61, 14);
-		format.labelFormat(lblMiddlename);
-
-		JLabel lblGender = new JLabel("Gender");
-		lblGender.setBounds(37, 203, 61, 14);
-		format.labelFormat(lblGender);
-
-		JLabel lblBirthday = new JLabel("Birthday");
-		lblBirthday.setBounds(37, 248, 61, 14);
-		format.labelFormat(lblBirthday);
-
-		JLabel lblPhone = new JLabel("Phone");
-		lblPhone.setBounds(37, 293, 61, 14);
-		format.labelFormat(lblPhone);
-
-		JLabel lblAddress = new JLabel("Address");
-		lblAddress.setBounds(37, 338, 61, 14);
-		format.labelFormat(lblAddress);
-
 		fnameField = new JTextField();
-		fnameField.setBounds(108, 65, 235, 20);
 		fnameField.setColumns(10);
 
 		mnameField = new JTextField();
-		mnameField.setBounds(108, 110, 235, 20);
 		add(facultyFormPanel);
 		mnameField.setColumns(10);
 
 		lnameField = new JTextField();
-		lnameField.setBounds(108, 155, 235, 20);
 		lnameField.setColumns(10);
 
-		genderComboBox = new JComboBox(gender);
-		format.comboBoxFormat(genderComboBox);
-		genderComboBox.setBounds(108, 200, 110, 20);
-
-		bdayField = new JTextField();
-		bdayField.setBounds(108, 245, 110, 20);
-		bdayField.setColumns(10);
-
-		phoneField = new JTextField();
-		phoneField.setBounds(108, 290, 235, 20);
-		phoneField.setColumns(10);
-
-		addressField = new JTextField();
-		addressField.setBounds(108, 335, 235, 20);
-		addressField.setColumns(10);
+		// genderComboBox = new JComboBox(gender);
+		// format.comboBoxFormat(genderComboBox);
+		//
+		// bdayField = new JTextField();
+		// bdayField.setColumns(10);
+		//
+		// phoneField = new JTextField();
+		// phoneField.setColumns(10);
+		//
+		// addressField = new JTextField();
+		// addressField.setColumns(10);
 
 		btnAddFaculty = new JButton("Add");
 		btnAddFaculty.setEnabled(false);
@@ -125,9 +99,13 @@ public class FacultyPanel extends JPanel {
 		btnAddFaculty.setBounds(593, 486, 91, 30);
 		btnAddFaculty.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				faculty.addFaculty(fnameField.getText(), mnameField.getText(), lnameField.getText(),
-						genderComboBox.getSelectedItem().toString(), bdayField.getText(), phoneField.getText(),
-						addressField.getText());
+//				faculty.addFaculty(fnameField.getText(), mnameField.getText(), lnameField.getText(),
+//						genderComboBox.getSelectedItem().toString(), bdayField.getText(), phoneField.getText(),
+//						addressField.getText());
+				fDAO.addFaculty(fnameField.getText(), mnameField.getText(), lnameField.getText(),specField.getText().toString());
+				String faculty = fnameField.getText() + " " + mnameField.getText() + " " + lnameField.getText() ;
+				int facID = fDAO.getID(faculty);
+				addFacultyToTable(facID, faculty, specField.getText());
 			}
 		});
 
@@ -142,13 +120,16 @@ public class FacultyPanel extends JPanel {
 				facultyModel.setValueAt(facultyID, i, 0);
 				facultyModel.setValueAt(fnameField.getText() + " " + mnameField.getText() + " " + lnameField.getText(),
 						i, 1);
-				facultyModel.setValueAt(genderComboBox.getSelectedItem().toString(), i, 2);
-				facultyModel.setValueAt(bdayField.getText(), i, 3);
-				facultyModel.setValueAt(phoneField.getText(), i, 4);
-				facultyModel.setValueAt(addressField.getText(), i, 5);
-				faculty.editFaculty(facultyID, fnameField.getText(), mnameField.getText(), lnameField.getText(),
-						genderComboBox.getSelectedItem().toString(), bdayField.getText(), phoneField.getText(),
-						addressField.getText());
+				facultyModel.setValueAt(specField.getText(), i, 2);
+//				facultyModel.setValueAt(genderComboBox.getSelectedItem().toString(), i, 2);
+//				facultyModel.setValueAt(bdayField.getText(), i, 3);
+//				facultyModel.setValueAt(phoneField.getText(), i, 4);
+//				facultyModel.setValueAt(addressField.getText(), i, 5);
+//				faculty.editFaculty(facultyID, fnameField.getText(), mnameField.getText(), lnameField.getText(),
+//						genderComboBox.getSelectedItem().toString(), bdayField.getText(), phoneField.getText(),
+//						addressField.getText());
+				fDAO.editFaculty(facultyID, fnameField.getText(), mnameField.getText(), lnameField.getText(), specField.getText());
+			
 			}
 		});
 
@@ -169,22 +150,76 @@ public class FacultyPanel extends JPanel {
 			}
 		});
 
-		btnViewFacultyTimetable = new JButton("View Faculty Timetable");
-		btnViewFacultyTimetable.setEnabled(false);
-		format.buttonFormat(btnViewFacultyTimetable, format.viewTimetableIcon);
-		btnViewFacultyTimetable.setBounds(802, 19, 170, 30);
-
 		JButton btnNewFaculty = new JButton("New");
 		format.buttonFormat(btnNewFaculty, format.newIcon);
-		btnNewFaculty.setBounds(20, 19, 89, 30);
+		btnNewFaculty.setBounds(880, 11, 89, 30);
 		btnNewFaculty.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				clearFacultyFormFields();
 			}
 		});
+		facultyFormPanel.setLayout(new GridLayout(10, 2, -100, 10));
+		facultyFormPanel.add(lblFname);
+		facultyFormPanel.add(fnameField);
+
+		JLabel lblMiddlename = new JLabel("Middlename");
+		format.labelFormat(lblMiddlename);
+		facultyFormPanel.add(lblMiddlename);
+		facultyFormPanel.add(mnameField);
+
+		JLabel lblLastname = new JLabel("Lastname");
+		format.labelFormat(lblLastname);
+
+		facultyFormPanel.add(lblLastname);
+		facultyFormPanel.add(lnameField);
+		
+		JLabel lblSpecialization = new JLabel("Specialization");
+		facultyFormPanel.add(lblSpecialization);
+		
+		specField = new JTextField();
+		facultyFormPanel.add(specField);
+		specField.setColumns(10);
+//
+//		JLabel lblGender = new JLabel("Gender");
+//		format.labelFormat(lblGender);
+//		facultyFormPanel.add(lblGender);
+//		facultyFormPanel.add(genderComboBox);
+//
+//		JLabel lblBirthday = new JLabel("Birthday");
+//		format.labelFormat(lblBirthday);
+//		facultyFormPanel.add(lblBirthday);
+//		facultyFormPanel.add(bdayField);
+//
+//		JLabel lblPhone = new JLabel("Phone");
+//		format.labelFormat(lblPhone);
+//		facultyFormPanel.add(lblPhone);
+//		facultyFormPanel.add(phoneField);
+//
+//		JLabel lblAddress = new JLabel("Address");
+//		format.labelFormat(lblAddress);
+//		facultyFormPanel.add(lblAddress);
+////		facultyFormPanel.add(addressField);
+//		facultyFormPanel.setFocusTraversalPolicy(new FocusTraversalOnArray(
+//				new Component[] { lblFname, fnameField, lblMiddlename, mnameField, lblLastname, lnameField, lblGender,
+//						genderComboBox, lblBirthday, bdayField, lblPhone, phoneField, lblAddress, addressField }));
+		
+		facultyFormPanel.setFocusTraversalPolicy(new FocusTraversalOnArray(
+				new Component[] { lblFname, fnameField, lblMiddlename, mnameField, lblLastname, lnameField}));
+		add(btnAddFaculty);
+		add(btnUpdateFaculty);
+		add(btnDeleteFaculty);
+		add(btnNewFaculty);
+
+		JPanel tablePanel = new JPanel();
+		tablePanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Faculty List",
+				TitledBorder.CENTER, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		tablePanel.setBounds(14, 52, 564, 471);
+		add(tablePanel);
+		tablePanel.setLayout(null);
 
 		JScrollPane facultyScrollPane = new JScrollPane();
-		facultyScrollPane.setBounds(20, 68, 552, 448);
+		facultyScrollPane.setBounds(6, 16, 552, 448);
+		tablePanel.add(facultyScrollPane);
 		facultyScrollPane.getViewport().setBackground(Color.WHITE);
 
 		facultyTable = new JTable(facultyModel) {
@@ -197,6 +232,7 @@ public class FacultyPanel extends JPanel {
 				return component;
 			}
 		};
+		facultyTable.setBorder(null);
 		facultyScrollPane.setViewportView(facultyTable);
 
 		format.tableFormat(facultyTable);
@@ -206,58 +242,36 @@ public class FacultyPanel extends JPanel {
 				btnAddFaculty.setEnabled(false);
 				btnUpdateFaculty.setEnabled(true);
 				btnDeleteFaculty.setEnabled(true);
-				btnViewFacultyTimetable.setEnabled(true);
 				facultyID = Integer.parseInt(facultyModel.getValueAt(i, 0).toString());
 				fnameField.setText(facultylist.get(i).getFname());
 				mnameField.setText(facultylist.get(i).getMname());
 				lnameField.setText(facultylist.get(i).getLname());
-				genderComboBox.setSelectedItem(facultyModel.getValueAt(i, 2).toString());
-				if (facultyModel.getValueAt(i, 3) == null)
-					bdayField.setText("");
-				else
-					bdayField.setText(facultyModel.getValueAt(i, 3).toString());
-				if (facultyModel.getValueAt(i, 4) == null)
-					phoneField.setText("");
-				else
-					phoneField.setText(facultyModel.getValueAt(i, 4).toString());
-				if (facultyModel.getValueAt(i, 5) == null)
-					addressField.setText("");
-				else
-					addressField.setText(facultyModel.getValueAt(i, 5).toString());
+				specField.setText(facultyModel.getValueAt(i, 2).toString());
+				
+				//genderComboBox.setSelectedItem(facultyModel.getValueAt(i, 2).toString());
+				// if (facultyModel.getValueAt(i, 3) == null)
+				// bdayField.setText("");
+				// else
+				// bdayField.setText(facultyModel.getValueAt(i, 3).toString());
+				// if (facultyModel.getValueAt(i, 4) == null)
+				// phoneField.setText("");
+				// else
+				// phoneField.setText(facultyModel.getValueAt(i, 4).toString());
+				// if (facultyModel.getValueAt(i, 5) == null)
+				// addressField.setText("");
+				// else
+				// addressField.setText(facultyModel.getValueAt(i,
+				// 5).toString());
 			}
 		});
-
-		JLabel lblFacultyList = new JLabel("Faculty List");
-		lblFacultyList.setHorizontalAlignment(SwingConstants.CENTER);
-		lblFacultyList.setBounds(250, 27, 89, 14);
-
-		facultyFormPanel.add(lblFacultyInformationDetails);
-		facultyFormPanel.add(lblFname);
-		facultyFormPanel.add(lblMiddlename);
-
-		JLabel lblLastname = new JLabel("Lastname");
-		lblLastname.setBounds(37, 158, 61, 14);
-		format.labelFormat(lblLastname);
-		
-		facultyFormPanel.add(lblLastname);
-		facultyFormPanel.add(lblGender);
-		facultyFormPanel.add(lblBirthday);
-		facultyFormPanel.add(lblPhone);
-		facultyFormPanel.add(lblAddress);
-		facultyFormPanel.add(fnameField);
-		facultyFormPanel.add(mnameField);
-		facultyFormPanel.add(lnameField);
-		facultyFormPanel.add(genderComboBox);
-		facultyFormPanel.add(bdayField);
-		facultyFormPanel.add(phoneField);
-		facultyFormPanel.add(addressField);
-		add(btnAddFaculty);
-		add(btnUpdateFaculty);
-		add(btnDeleteFaculty);
-		add(btnViewFacultyTimetable);
-		add(btnNewFaculty);
-		add(facultyScrollPane);
-		add(lblFacultyList);
+	}
+	public void addFacultyToTable(int facID, String faculty, String spec) {
+		Object[] newFaculty = new Object[facultyTable.getRowCount()];
+		newFaculty[0] = facID;
+		newFaculty[1] = faculty;
+		newFaculty[2] = spec;
+		newFaculty[3] = 0;
+		facultyModel.addRow(newFaculty);
 	}
 
 	public void clearFacultyFormFields() {
@@ -268,10 +282,9 @@ public class FacultyPanel extends JPanel {
 		bdayField.setText("");
 		phoneField.setText("");
 		addressField.setText("");
+		specField.setText("");
 		btnAddFaculty.setEnabled(true);
 		btnUpdateFaculty.setEnabled(false);
 		btnDeleteFaculty.setEnabled(false);
-		btnViewFacultyTimetable.setEnabled(false);
 	}
-
 }

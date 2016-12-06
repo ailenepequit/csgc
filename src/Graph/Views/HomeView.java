@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
 import DAO.BlockSubjectsDAO;
+import DAO.FacultyDAO;
 import DAO.OfferingDAO;
 import DAO.TimeslotDAO;
 import Graph.Models.Faculty;
@@ -41,19 +42,21 @@ public class HomeView extends JFrame {
 	static OfferingFormPanel formPanel;
 	
 	Offering offering = new Offering();
-	OfferingDAO o = new OfferingDAO();
+	
 	Subject subject = new Subject();
 	Room room = new Room();
 	Faculty faculty = new Faculty();
+	OfferingDAO o = new OfferingDAO();
 	TimeslotDAO t = new TimeslotDAO();
 	BlockSubjectsDAO b = new BlockSubjectsDAO();
-	
+	FacultyDAO fDAO = new FacultyDAO();
 	Formatter format = new Formatter();
 
 	public HomeView() {
 		o.dropTableOfferings();
 		t.dropTableAvailableRoomTimeslot();
 		b.dropTableBlockSubjects();
+		fDAO.clearWorkLoad();
 		contentPane = new JPanel();
 		contentPane.setForeground(new Color(47, 79, 79));
 		contentPane.setBackground(new Color(204, 204, 204));
@@ -82,9 +85,6 @@ public class HomeView extends JFrame {
 		facultyPanel = new FacultyPanel();
 		contentPane.add(offeringPanel);
 		contentPane.add(formPanel);
-		contentPane.add(roomsPanel);
-		contentPane.add(subjectsPanel);
-		contentPane.add(facultyPanel);
 	}
 
 	public void headerComponents() {
@@ -168,9 +168,11 @@ public class HomeView extends JFrame {
 		subjectsBtn.setBounds(0, 49, 242, 50);
 		subjectsBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				setPanelsVisibleToFalse();
+				subjectsPanel = new SubjectPanel();
+				contentPane.add(subjectsPanel);
 				setSideBarButtonsUnselectedFormat();
 				sideBarButtonSelected(subjectsBtn);
-				setPanelsVisibleToFalse();
 				subjectsPanel.setVisible(true);
 			}
 		});
@@ -181,6 +183,8 @@ public class HomeView extends JFrame {
 		facultyBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setPanelsVisibleToFalse();
+				facultyPanel = new FacultyPanel();
+				contentPane.add(facultyPanel);				
 				setSideBarButtonsUnselectedFormat();
 				sideBarButtonSelected(facultyBtn);
 				facultyPanel.setVisible(true);
@@ -192,9 +196,11 @@ public class HomeView extends JFrame {
 		sidebarButtonFormat(roomsBtn, format.imagesPath + "chair.png");
 		roomsBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				setSideBarButtonsUnselectedFormat();
-				sideBarButtonSelected(roomsBtn);
 				setPanelsVisibleToFalse();
+				roomsPanel = new RoomPanel();
+				contentPane.add(roomsPanel);
+				setSideBarButtonsUnselectedFormat();
+				sideBarButtonSelected(roomsBtn);					
 				roomsPanel.setVisible(true);
 			}
 		});
@@ -208,8 +214,8 @@ public class HomeView extends JFrame {
 				sideBarButtonSelected(visualizationBtn);
 				//setPanelsVisibleToFalse();
 				
-				offeringPanel.sv.setVisible(true);
-			//	s.setVisible(true);
+//				offeringPanel.sv.setVisible(true);
+//				s.setVisible(true);
 			}
 		});
 
@@ -256,6 +262,9 @@ public class HomeView extends JFrame {
 		roomsPanel.setVisible(false);
 		subjectsPanel.setVisible(false);
 		facultyPanel.setVisible(false);
+		contentPane.remove(roomsPanel);
+		contentPane.remove(subjectsPanel);
+		contentPane.remove(facultyPanel);
 	}
 	
 }

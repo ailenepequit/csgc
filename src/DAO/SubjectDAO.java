@@ -108,11 +108,11 @@ public class SubjectDAO {
 		return count;
 	}
 
-	public void addSubject(String subject, double units, int yr_lvl, Object semester) {
+	public void addSubject(String subject, double lecUnits, double labUnits, int yr_lvl, Object semester, String tag) {
 		try {
 			openDBConnection();
-			query = "INSERT INTO subjects(description, units, yr_level, semester) VALUES ('" + subject + "', " + units
-					+ ", " + yr_lvl + ", '" + semester + "')";
+			query = "INSERT INTO subjects(description, lec_units, lab_units, yr_level, semester, tag) VALUES ('" + subject + "', " + lecUnits
+					+ ", " + labUnits+ ", " + yr_lvl + ", '" + semester + "', '"+ tag +"')";
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.execute();
 			conn.close();
@@ -122,11 +122,11 @@ public class SubjectDAO {
 		}
 	}
 
-	public void editSubject(int sID, String subject, double units, int yr_lvl, Object semester) {
+	public void editSubject(int sID, String subject, double lecUnits, double labUnits, int yr_lvl, Object semester, String tag) {
 		try {
 			openDBConnection();
-			query = "UPDATE subjects SET description='" + subject + "', units=" + units + ", yr_level= " + yr_lvl
-					+ ", semester= '" + semester + "' WHERE subjID=" + sID;
+			query = "UPDATE subjects SET description='" + subject + "', lec_units=" + lecUnits + ", lab_units =" +labUnits +", yr_level= " + yr_lvl
+					+ ", semester= '" + semester + "', tag= '" + tag + "' WHERE subjID=" + sID;
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.executeUpdate();
 			conn.close();
@@ -218,7 +218,8 @@ public class SubjectDAO {
 		}
 		return tag;
 	}
-	public void dropTableSubjectRoomMatching(){
+
+	public void dropTableSubjectRoomMatching() {
 		try {
 			openDBConnection();
 			query = "Drop table IF EXISTS subject_room_matchings";
@@ -227,12 +228,13 @@ public class SubjectDAO {
 			conn.close();
 			createTableSubjectRoomMatching();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Offering DAO) Error dropping table subject_room_matching:\n" + e.getMessage() + "\n",
-					"Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"(Offering DAO) Error dropping table subject_room_matching:\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
-	public void createTableSubjectRoomMatching(){
+
+	public void createTableSubjectRoomMatching() {
 		try {
 			openDBConnection();
 			query = "Create table subject_room_matchings (id int PRIMARY KEY AUTO_INCREMENT, subjID int references subject(subjID), roomID int references rooms(roomID))";
@@ -240,12 +242,13 @@ public class SubjectDAO {
 			stmt.executeUpdate(query);
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Offering DAO) Error creating table subject_room_matchings:\n" + e.getMessage() + "\n",
-					"Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"(Offering DAO) Error creating table subject_room_matchings:\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
-	public void dropTableSubjectFacultyMatching(){
+
+	public void dropTableSubjectFacultyMatching() {
 		try {
 			openDBConnection();
 			query = "Drop table IF EXISTS subject_faculty_matchings";
@@ -254,12 +257,13 @@ public class SubjectDAO {
 			conn.close();
 			createTableSubjectFacultyMatching();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Offering DAO) Error dropping table subject_faculty_matching:\n" + e.getMessage() + "\n",
-					"Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"(Offering DAO) Error dropping table subject_faculty_matching:\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
-	public void createTableSubjectFacultyMatching(){
+
+	public void createTableSubjectFacultyMatching() {
 		try {
 			openDBConnection();
 			query = "Create table subject_faculty_matchings (id int PRIMARY KEY AUTO_INCREMENT, subjID int references subject(subjID), facID int references faculty(facID))";
@@ -267,34 +271,73 @@ public class SubjectDAO {
 			stmt.executeUpdate(query);
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Offering DAO) Error creating table subject_room_matchings:\n" + e.getMessage() + "\n",
-					"Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"(Offering DAO) Error creating table subject_room_matchings:\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
 		}
+	}
+
+	public ArrayList<Integer> getMatchedRoom(int subject) {
+		ArrayList<Integer> subjectList = new ArrayList<Integer>();
+		try {
+			openDBConnection();
+			query = "SELECT roomID FROM `subject_room_matchings` WHERE subjID = " +subject;
+			rs = st.executeQuery(query);
+			while (rs.next()) {
+				subjectList.add(rs.getInt("roomID"));
+			}
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null,
+					"(Subject DAO) Error retrieving list of matched rooms\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		return subjectList;
 	}
 	
 	public void subjectRoomMatch(int subject, int room) {
 		try {
 			openDBConnection();
-			query = "INSERT INTO subject_room_matchings(subjID, roomID) VALUES (" + subject + ", "+room+")";
+			query = "INSERT INTO subject_room_matchings(subjID, roomID) VALUES (" + subject + ", " + room + ")";
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.execute();
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Subject DAO) Error matching subject to room:\n" + e.getMessage() + "\n",
-					"Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"(Subject DAO) Error matching subject to room:\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
+
+	public ArrayList<Integer> getMatchedFaculty(int subject, double unit) {
+		ArrayList<Integer> subjectList = new ArrayList<Integer>();
+		try {
+			openDBConnection();
+			query = "SELECT facID FROM `subject_faculty_matchings` left outer join faculty USING (facID) where subjID = "+subject+" and wload + "+unit+" <= 21.0";
+			rs = st.executeQuery(query);
+			while (rs.next()) {
+				subjectList.add(rs.getInt("facID"));
+			}
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null,
+					"(Subject DAO) Error retrieving list of matched faculty:\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		return subjectList;
+	}
+
 	public void subjectFacultyMatch(int subject, int faculty) {
 		try {
 			openDBConnection();
-			query = "INSERT INTO subject_faculty_matchings(subjID, facID) VALUES (" + subject + ", "+faculty+")";
+			query = "INSERT INTO subject_faculty_matchings(subjID, facID) VALUES (" + subject + ", " + faculty + ")";
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.execute();
 			conn.close();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "(Subject DAO) Error matching subject to faculty:\n" + e.getMessage() + "\n",
-					"Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					"(Subject DAO) Error matching subject to faculty:\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 }

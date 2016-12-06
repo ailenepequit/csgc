@@ -25,6 +25,9 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import DAO.BlockSubjectsDAO;
+import DAO.FacultyDAO;
+import DAO.OfferingDAO;
+import DAO.TimeslotDAO;
 import Graph.Models.ExportToExcel;
 import Graph.Models.Faculty;
 import Graph.Models.Offering;
@@ -53,10 +56,13 @@ public class OfferingPanel extends JPanel {
 	JScrollPane scrollPane;
 	JList<String> listBy;
 	final JComboBox<String> comboBox;
-	JButton btnViewTimetable;
+	JButton btnViewTimetable, btnGraphColoring;
 
 	DefaultListModel<String> listModel = new DefaultListModel<String>();
 	BlockSubjectsDAO b = new BlockSubjectsDAO();
+	OfferingDAO o = new OfferingDAO();
+	TimeslotDAO t = new TimeslotDAO();
+	FacultyDAO fDAO = new FacultyDAO();
 
 	Offering offering = new Offering();
 	Subject subject = new Subject();
@@ -80,10 +86,10 @@ public class OfferingPanel extends JPanel {
 
 	static Scheduler s;
 	Statistics sv;
-	
+
 	public OfferingPanel() {
 		setBounds(252, 73, 1002, 586);
-		
+
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(259, 68, 733, 460);
 		scrollPane.getViewport().setBackground(Color.WHITE);
@@ -144,6 +150,7 @@ public class OfferingPanel extends JPanel {
 				showOption();
 				sortList("All");
 				setTableModel("All");
+
 			}
 		});
 
@@ -172,10 +179,11 @@ public class OfferingPanel extends JPanel {
 		});
 
 		setLayout(null);
-		String[] sortBy = { "All", "Block", "Room", "Faculty" };
+		String[] sortBy = { "All Offerings", "Block", "Room", "Faculty" };
 		for (String s : sortBy)
 			cb.addElement(s);
 		comboBox = new JComboBox<String>(cb);
+		comboBox.setEnabled(false);
 		format.comboBoxFormat(comboBox);
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -189,11 +197,13 @@ public class OfferingPanel extends JPanel {
 		comboBox.setBounds(10, 68, 125, 23);
 
 		btnViewTimetable = new JButton("View Timetable");
+		btnViewTimetable.setEnabled(false);
 		format.buttonFormat(btnViewTimetable, "");
 		btnViewTimetable.setBounds(664, 12, 104, 30);
 		btnViewTimetable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String sched = comboBox.getSelectedItem().toString();
+				btnViewTimetable.setEnabled(true);
 				ScheduleView s = null;
 				if (sched.equals("Block")) {
 					s = new ScheduleView("Block: " + listBy.getSelectedValue().toString() + " School Year: " + sy
@@ -211,8 +221,9 @@ public class OfferingPanel extends JPanel {
 			}
 		});
 
-		JButton btnGraphColoring = new JButton("Graph Coloring");
+		btnGraphColoring = new JButton("Graph Coloring");
 		btnGraphColoring.setBounds(545, 12, 104, 30);
+		btnGraphColoring.setEnabled(false);
 		format.buttonFormat(btnGraphColoring, "");
 		btnGraphColoring.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -258,7 +269,7 @@ public class OfferingPanel extends JPanel {
 				offerings_data[i] = fac.get(i).toTimetableArray();
 			}
 			break;
-		case "All":
+		case "All Offerings":
 			courselist = new ArrayList<Offering>(offering.offeringsList());
 			offerings_data = new Object[courselist.size()][];
 			for (int i = 0; i < courselist.size(); i++) {
@@ -307,6 +318,10 @@ public class OfferingPanel extends JPanel {
 				JOptionPane.OK_CANCEL_OPTION);
 
 		if (option == JOptionPane.OK_OPTION) {
+			o.dropTableOfferings();
+			t.dropTableAvailableRoomTimeslot();
+			b.dropTableBlockSubjects();
+			fDAO.clearWorkLoad();
 			HomeView.lblGeneratedTimetableFor.setVisible(true);
 			HomeView.lblGeneratedTimetableFor.setText("Generated Schedule for SY " + syCB.getSelectedItem().toString()
 					+ " " + semCB.getSelectedItem().toString() + " Semester");
@@ -323,15 +338,22 @@ public class OfferingPanel extends JPanel {
 			sv.time_exec_R(s.time_exec_R());
 			sv.time_exec_F(s.time_exec_F());
 			sv.create();
-			
+
 			courselist = offering.offeringsList();
+
 			JOptionPane.showMessageDialog(null,
-					"Successfully Generated Offering Schedule. " 
-							+ "\n\nTotal subjects scheduled: " + courselist.size() + "\n\nTimeslot Assignment: \t"
-							+ s.timeslotAssignmentExec() + " s" + "\nRoom Assignment: \t" + s.roomAssignmentExec()
-							+ " s" + "\nFaculty Assignment: \t" + s.facultyAssignmentExec() + " s"
-							+ "\n\nTotal Time Execution: \t" + s.timeExecution() + " seconds",
+					"Successfully Generated Offering Schedule. " + "\n\nTotal subjects scheduled: " + courselist.size()
+							+ "\n\nTimeslot Assignment: \t" + s.timeslotAssignmentExec() + " s"
+							+ "\nRoom Assignment: \t" + s.roomAssignmentExec() + " s" + "\nFaculty Assignment: \t"
+							+ s.facultyAssignmentExec() + " s" + "\n\nTotal Time Execution: \t" + s.timeExecution()
+							+ " seconds" + "\n"
+							+ "\nNo. of Subjects with no Rooms: " + s.noRoomSubjects().size()
+							+ "\nNo. of Subjects with no Faculty: " + s.noFacultySubjects().size(),
 					"Completed", JOptionPane.INFORMATION_MESSAGE);
+
+			comboBox.setEnabled(true);
+			btnGraphColoring.setEnabled(true);
+			btnViewTimetable.setEnabled(true);
 		}
 	}
 
@@ -362,8 +384,8 @@ public class OfferingPanel extends JPanel {
 			listBy.setModel(listModel);
 			sortBy = "Faculty List";
 			break;
-		case "All":
-			setTableModel("All");
+		case "All Offerings":
+			setTableModel("All Offerings");
 			sortBy = "";
 			break;
 		}

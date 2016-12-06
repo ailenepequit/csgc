@@ -215,7 +215,7 @@ public class OfferingDAO {
 		ArrayList<Offering> offeringList = new ArrayList<Offering>();
 		try {
 			openDBConnection();
-			query = "SELECT offerID, sy, offerings.semester, block_subjects.description, block_subjects.blockID, block_subjects.block_no, timeslot, room_desc, IFNULL(fname,'') as fname, IFNULL(mname,'') as mname, IFNULL(lname,'') as lname, block_subjects.slots, block_subjects.units, subjects.tag from offerings left join block_subjects on block_subjects.blockID = offerings.blockID left join subjects on block_subjects.subjID = subjects.subjID left join rooms on offerings.roomID = rooms.roomID left join faculty on faculty.facID = offerings.facID where timeslot = '"
+			query = "SELECT offerID, sy, offerings.semester, block_subjects.description, block_subjects.blockID, block_subjects.block_no, timeslot, room_desc, IFNULL(fname,'') as fname, IFNULL(mname,'') as mname, IFNULL(lname,'') as lname, block_subjects.subjID, block_subjects.slots, block_subjects.units, subjects.tag from offerings left join block_subjects on block_subjects.blockID = offerings.blockID left join subjects on block_subjects.subjID = subjects.subjID left join rooms on offerings.roomID = rooms.roomID left join faculty on faculty.facID = offerings.facID where timeslot = '"
 					+ timeslot + "'";
 			rs = st.executeQuery(query);
 			while (rs.next()) {
@@ -225,6 +225,7 @@ public class OfferingDAO {
 				offering.setSemester(rs.getString("offerings.semester"));
 				offering.setTimeslot(rs.getString("timeslot"));
 				offering.setBlockID(rs.getInt("block_subjects.blockID"));
+				offering.setSubjID(rs.getInt("block_subjects.subjID"));
 				offering.setBlockNo(rs.getString("block_subjects.block_no"));
 				offering.setUnits(rs.getDouble("block_subjects.units"));
 				offering.setDescription(rs.getString("block_subjects.description"));
@@ -248,7 +249,7 @@ public class OfferingDAO {
 		ArrayList<Offering> offeringList = new ArrayList<Offering>();
 		try {
 			openDBConnection();
-			query = "SELECT offerID, sy, offerings.semester, block_subjects.description, block_subjects.blockID, block_subjects.block_no, timeslot, room_desc, IFNULL(fname,'') as fname, IFNULL(mname,'') as mname, IFNULL(lname,'') as lname, block_subjects.slots, block_subjects.units, block_subjects.color, subjects.tag from offerings left join block_subjects on block_subjects.blockID = offerings.blockID left join subjects on block_subjects.subjID = subjects.subjID left join rooms on offerings.roomID = rooms.roomID left join faculty on faculty.facID = offerings.facID where "+ cond;
+			query = "SELECT offerID, sy, offerings.semester, block_subjects.description, block_subjects.blockID, block_subjects.block_no, timeslot, IFNULL(room_desc,'') as room_desc, IFNULL(fname,'') as fname, IFNULL(mname,'') as mname, IFNULL(lname,'') as lname, block_subjects.slots, block_subjects.units, block_subjects.color, subjects.tag from offerings left join block_subjects on block_subjects.blockID = offerings.blockID left join subjects on block_subjects.subjID = subjects.subjID left join rooms on offerings.roomID = rooms.roomID left join faculty on faculty.facID = offerings.facID where "+ cond;
 			rs = st.executeQuery(query);
 			while (rs.next()) {
 				Offering offering = new Offering();

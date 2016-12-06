@@ -8,7 +8,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -25,6 +24,8 @@ import javax.swing.table.TableColumn;
 
 import Graph.Models.Building;
 import Graph.Models.Room;
+import javax.swing.border.TitledBorder;
+import javax.swing.UIManager;
 
 @SuppressWarnings({ "rawtypes", "serial", "unchecked" })
 public class RoomPanel extends JPanel {
@@ -32,7 +33,7 @@ public class RoomPanel extends JPanel {
 	private int roomID, bID;
 	private String bname;
 	private JTable roomTable;
-	private JButton btnAddRoom, btnUpdateRoom, btnDeleteRoom, btnViewRoomTimetable;
+	private JButton btnAddRoom, btnUpdateRoom, btnDeleteRoom;
 	DefaultTableModel roomModel;
 	private JTextField roomField, capacityField;
 	private JComboBox buildingComboBox, typeComboBox;
@@ -42,7 +43,8 @@ public class RoomPanel extends JPanel {
 
 	Room room = new Room();
 	ArrayList<Room> roomlist = room.roomList("All");
-	
+	private JPanel panel;
+
 	public RoomPanel() {
 		setBackground(Color.WHITE);
 		final Building b = new Building();
@@ -100,18 +102,6 @@ public class RoomPanel extends JPanel {
 			}
 		});
 
-		btnViewRoomTimetable = new JButton("View Room Timetable");
-		btnViewRoomTimetable.setEnabled(false);
-		format.buttonFormat(btnViewRoomTimetable, format.viewTimetableIcon);
-		btnViewRoomTimetable.setBounds(802, 19, 170, 30);
-		btnViewRoomTimetable.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-//				System.out.println(roomID);
-//				ScheduleView sv = new ScheduleView(roomID, "room");
-//				sv.show();
-			}
-		});
-
 		btnUpdateRoom = new JButton("Update ");
 		btnUpdateRoom.setEnabled(false);
 		btnUpdateRoom.setBounds(736, 488, 91, 30);
@@ -133,56 +123,18 @@ public class RoomPanel extends JPanel {
 
 		JButton btnNewRoom = new JButton("New");
 		format.buttonFormat(btnNewRoom, format.newIcon);
-		btnNewRoom.setBounds(20, 19, 89, 30);
+		btnNewRoom.setBounds(883, 19, 89, 30);
 		btnNewRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				clearRoomFormFields();
 			}
 		});
-
-		roomTable = new JTable(roomModel) {
-			public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-				Component component = super.prepareRenderer(renderer, row, column);
-				int rendererWidth = component.getPreferredSize().width + 10;
-				TableColumn tableColumn = getColumnModel().getColumn(column);
-				tableColumn.setPreferredWidth(
-						Math.max(rendererWidth + getIntercellSpacing().width, tableColumn.getPreferredWidth()));
-				return component;
-			}
-		};
 		;
-		format.tableFormat(roomTable);
-		roomTable.setBounds(26, 92, 446, 462);
-		roomTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		JScrollPane roomListScrollPane = new JScrollPane();
-		roomListScrollPane.setBounds(20, 68, 516, 450);
-		roomListScrollPane.setViewportView(roomTable);
-		roomListScrollPane.getViewport().setBackground(Color.WHITE);
 
-		roomTable.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				int i = roomTable.getSelectedRow();
-				btnAddRoom.setEnabled(false);
-				btnUpdateRoom.setEnabled(true);
-				btnDeleteRoom.setEnabled(true);
-				btnViewRoomTimetable.setEnabled(true);
-				roomID = Integer.parseInt(roomModel.getValueAt(i, 0).toString());
-				bname = roomModel.getValueAt(i, 1).toString();
-				cm.setSelectedItem(bname);
-				roomField.setText(roomModel.getValueAt(i, 2).toString());
-				typeComboBox.setSelectedItem(roomModel.getValueAt(i, 3).toString());
-				capacityField.setText(roomModel.getValueAt(i, 4).toString());
-			}
-		});
-
-		JLabel lblRoomList = new JLabel("Room List");
-		lblRoomList.setHorizontalAlignment(SwingConstants.CENTER);
-		lblRoomList.setBounds(219, 27, 111, 14);
-
-		String[] r = {"All", "Laboratory", "Lecture"};
+		String[] r = { "All", "Laboratory", "Lecture" };
 		comboBox = new JComboBox(r);
-		comboBox.setBounds(425, 19, 111, 30);
-		comboBox.addActionListener(new ActionListener(){
+		comboBox.setBounds(20, 19, 111, 30);
+		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String t = comboBox.getSelectedItem().toString();
 				roomlist = room.roomList(t);
@@ -194,10 +146,11 @@ public class RoomPanel extends JPanel {
 				roomTable.setModel(roomModel);
 			}
 		});
-		
+
 		JPanel roomFormPanel = new JPanel();
-		roomFormPanel.setBounds(590, 68, 382, 409);
-		roomFormPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+		roomFormPanel.setBounds(590, 61, 382, 416);
+		roomFormPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Room Information Details",
+				TitledBorder.CENTER, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		roomFormPanel.setLayout(null);
 
 		JLabel lblBuilding = new JLabel("Building");
@@ -205,45 +158,79 @@ public class RoomPanel extends JPanel {
 		format.labelFormat(lblBuilding);
 
 		JLabel lblRoomName = new JLabel("Room Name");
-		lblRoomName.setBounds(25, 113, 70, 14);
+		lblRoomName.setBounds(25, 124, 70, 14);
 		format.labelFormat(lblRoomName);
 
 		JLabel lblType = new JLabel("Type");
-		lblType.setBounds(25, 154, 46, 14);
+		lblType.setBounds(25, 180, 46, 14);
 		format.labelFormat(lblType);
 
 		JLabel lblCapacity = new JLabel("Capacity");
-		lblCapacity.setBounds(25, 193, 46, 14);
+		lblCapacity.setBounds(25, 238, 46, 14);
 		format.labelFormat(lblCapacity);
 
-		JLabel lblRoomInformationDetails = new JLabel("Room Information Details");
-		lblRoomInformationDetails.setHorizontalAlignment(SwingConstants.CENTER);
-		lblRoomInformationDetails.setBounds(89, 26, 216, 14);
-
 		buildingComboBox = new JComboBox(cm);
-		buildingComboBox.setBounds(115, 65, 244, 23);
+		buildingComboBox.setBounds(115, 60, 244, 30);
 		format.comboBoxFormat(buildingComboBox);
 
 		roomField = new JTextField();
-		roomField.setBounds(115, 109, 244, 23);
+		roomField.setBounds(115, 116, 244, 30);
 		roomField.setColumns(10);
 
 		typeComboBox = new JComboBox<Object>(type);
 		typeComboBox.setSelectedIndex(-1);
 		format.comboBoxFormat(typeComboBox);
-		typeComboBox.setBounds(115, 150, 182, 23);
+		typeComboBox.setBounds(115, 172, 182, 30);
 
 		capacityField = new JTextField();
 		capacityField.setHorizontalAlignment(SwingConstants.TRAILING);
-		capacityField.setBounds(115, 189, 86, 23);
+		capacityField.setBounds(115, 230, 86, 30);
 		capacityField.setColumns(10);
-
-		add(lblRoomList);
 		add(btnAddRoom);
 		add(btnNewRoom);
 		add(btnDeleteRoom);
-		add(roomListScrollPane);
-		add(btnViewRoomTimetable);
+
+		panel = new JPanel();
+		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Room List", TitledBorder.CENTER,
+				TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel.setBounds(14, 60, 528, 465);
+		add(panel);
+		panel.setLayout(null);
+
+		roomTable = new JTable(roomModel) {
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+				Component component = super.prepareRenderer(renderer, row, column);
+				int rendererWidth = component.getPreferredSize().width + 10;
+				TableColumn tableColumn = getColumnModel().getColumn(column);
+				tableColumn.setPreferredWidth(
+						Math.max(rendererWidth + getIntercellSpacing().width, tableColumn.getPreferredWidth()));
+				return component;
+			}
+		};
+		
+		format.tableFormat(roomTable);
+		roomTable.setBounds(26, 92, 446, 462);
+		roomTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		JScrollPane roomListScrollPane = new JScrollPane();
+		roomListScrollPane.setBounds(6, 16, 516, 450);
+		panel.add(roomListScrollPane);
+		roomListScrollPane.setViewportView(roomTable);
+		roomListScrollPane.getViewport().setBackground(Color.WHITE);
+
+		roomTable.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				int i = roomTable.getSelectedRow();
+				btnAddRoom.setEnabled(false);
+				btnUpdateRoom.setEnabled(true);
+				btnDeleteRoom.setEnabled(true);
+				roomID = Integer.parseInt(roomModel.getValueAt(i, 0).toString());
+				bname = roomModel.getValueAt(i, 1).toString();
+				cm.setSelectedItem(bname);
+				roomField.setText(roomModel.getValueAt(i, 2).toString());
+				typeComboBox.setSelectedItem(roomModel.getValueAt(i, 3).toString());
+				capacityField.setText(roomModel.getValueAt(i, 4).toString());
+			}
+		});
 		add(btnUpdateRoom);
 		add(comboBox);
 		add(roomFormPanel);
@@ -251,7 +238,6 @@ public class RoomPanel extends JPanel {
 		roomFormPanel.add(lblRoomName);
 		roomFormPanel.add(lblType);
 		roomFormPanel.add(lblCapacity);
-		roomFormPanel.add(lblRoomInformationDetails);
 		roomFormPanel.add(buildingComboBox);
 		roomFormPanel.add(roomField);
 		roomFormPanel.add(typeComboBox);
@@ -267,7 +253,7 @@ public class RoomPanel extends JPanel {
 		newRoom[4] = capacity;
 		roomModel.addRow(newRoom);
 	}
-	
+
 	public void clearRoomFormFields() {
 		buildingComboBox.setSelectedIndex(-1);
 		roomField.setText("");
@@ -276,8 +262,5 @@ public class RoomPanel extends JPanel {
 		btnAddRoom.setEnabled(true);
 		btnUpdateRoom.setEnabled(false);
 		btnDeleteRoom.setEnabled(false);
-		btnViewRoomTimetable.setEnabled(false);
 	}
-
-
 }

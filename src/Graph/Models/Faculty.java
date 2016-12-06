@@ -131,7 +131,7 @@ public class Faculty {
 	}
 
 	public Object[] toObjectArray() {
-		return new Object[] { getID(), getName(), getGender(), getBday(), getPhone(), getAddress(), getSpecialization(),
+		return new Object[] { getID(), getName(), getSpecialization(),
 				getWload() };
 	}
 

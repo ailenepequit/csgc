@@ -149,6 +149,20 @@ public class FacultyDAO {
 					"Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
+	
+	public void editFaculty(int fID, String fname, String mname, String lname, String spec) {
+		try {
+			openDBConnection();
+			query = "UPDATE faculty SET fname='" + fname + "', mname='" + mname + "', lname='" + lname
+					+ "', specialization='" + spec + "' WHERE facID=" + fID;
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			preparedStmt.executeUpdate();
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Faculty DAO) Error editing faculty:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
 
 	public void addFaculty(String fname, String mname, String lname, String gender, String bday, String phone,
 			String address) {
@@ -157,6 +171,20 @@ public class FacultyDAO {
 			query = ("INSERT INTO faculty (fname, mname, lname, gender, bday, phone, address) VALUES ('" + fname
 					+ "','" + mname + "','" + lname + "','" + gender + "','" + bday + "','" + phone + "','" + address
 					+ "'");
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			preparedStmt.executeUpdate();
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Faculty DAO) Error adding faculty:\n" + e.getMessage() + "\n",
+					"Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	public void addFaculty(String fname, String mname, String lname, String spec) {
+		try {
+			openDBConnection();
+			query = ("INSERT INTO faculty (fname, mname, lname, specialization) VALUES ('" + fname
+					+ "','" + mname + "','" + lname + "','" + spec + "'");
 			PreparedStatement preparedStmt = conn.prepareStatement(query);
 			preparedStmt.executeUpdate();
 			conn.close();
@@ -193,5 +221,31 @@ public class FacultyDAO {
 					JOptionPane.ERROR_MESSAGE);
 		}
 		return faclist;
+	}
+	
+	public void updateWorkLoad(int id, double unit) {
+		try {
+			openDBConnection();
+			query = "UPDATE faculty SET wload = wload + " + unit + " WHERE facID = " + id;
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			preparedStmt.executeUpdate();
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Faculty DAO) Error updating faculty workload units:\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	public void clearWorkLoad(){
+		try {
+			openDBConnection();
+			query = "UPDATE faculty SET wload = 0";
+			PreparedStatement preparedStmt = conn.prepareStatement(query);
+			preparedStmt.executeUpdate();
+			conn.close();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "(Faculty DAO) Error updating faculty workload units:\n" + e.getMessage() + "\n", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
 	}
 }
