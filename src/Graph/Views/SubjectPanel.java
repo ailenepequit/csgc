@@ -66,7 +66,7 @@ public class SubjectPanel extends JPanel {
 		btnAddSubject = new JButton("Add");
 		btnAddSubject.setEnabled(false);
 		format.buttonFormat(btnAddSubject, format.addIcon);
-		btnAddSubject.setBounds(604, 493, 91, 30);
+		btnAddSubject.setBounds(600, 500, 91, 30);
 		btnAddSubject.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String desc = descriptionField.getText();
@@ -84,7 +84,7 @@ public class SubjectPanel extends JPanel {
 		btnUpdateSubject = new JButton("Update");
 		btnUpdateSubject.setEnabled(false);
 		format.buttonFormat(btnUpdateSubject, format.updateIcon);
-		btnUpdateSubject.setBounds(745, 493, 91, 30);
+		btnUpdateSubject.setBounds(741, 500, 91, 30);
 		btnUpdateSubject.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int i = subjectTable.getSelectedRow();
@@ -103,7 +103,7 @@ public class SubjectPanel extends JPanel {
 
 		btnDeleteSubject = new JButton("Delete");
 		format.buttonFormat(btnDeleteSubject, format.deleteIcon);
-		btnDeleteSubject.setBounds(879, 493, 91, 30);
+		btnDeleteSubject.setBounds(879, 500, 91, 30);
 		btnDeleteSubject.setEnabled(false);
 		btnDeleteSubject.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -119,7 +119,7 @@ public class SubjectPanel extends JPanel {
 		});
 
 		JButton btnNewSubject = new JButton("New");
-		btnNewSubject.setBounds(881, 19, 89, 30);
+		btnNewSubject.setBounds(880, 20, 90, 30);
 		format.buttonFormat(btnNewSubject, format.newIcon);
 		btnNewSubject.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -128,7 +128,7 @@ public class SubjectPanel extends JPanel {
 		});
 
 		JPanel subjectFormPanel = new JPanel();
-		subjectFormPanel.setBounds(602, 60, 370, 422);
+		subjectFormPanel.setBounds(600, 60, 370, 430);
 		subjectFormPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"),
 				"Course Information Details", TitledBorder.CENTER, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		subjectFormPanel.setLayout(null);
@@ -152,7 +152,7 @@ public class SubjectPanel extends JPanel {
 
 		String[] s = { "All", "1st", "2nd", "S" };
 		final JComboBox comboBox = new JComboBox(s);
-		comboBox.setBounds(21, 19, 73, 30);
+		comboBox.setBounds(20, 20, 73, 30);
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String sem = comboBox.getSelectedItem().toString();
@@ -166,8 +166,6 @@ public class SubjectPanel extends JPanel {
 				}
 				subjectModel = new DefaultTableModel(subject_data, subject_columns);
 				subjectTable.setModel(subjectModel);
-				// subjectTable.getUpdateSelectionOnSort();
-				// subjectTable.repaint();
 			}
 		});
 

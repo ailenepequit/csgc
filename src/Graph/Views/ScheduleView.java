@@ -32,7 +32,6 @@ public class ScheduleView extends JFrame {
 	private JPanel contentPane;
 	Offering c = new Offering();
 	ArrayList<Offering> offeringlist;
-	MultiSpanCellTable mtable;
 	private JTable scheduleTable;
 	JLabel header;
 	String title;

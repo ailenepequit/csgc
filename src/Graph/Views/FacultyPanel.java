@@ -64,7 +64,7 @@ public class FacultyPanel extends JPanel {
 		setLayout(null);
 
 		JPanel facultyFormPanel = new JPanel();
-		facultyFormPanel.setBounds(593, 52, 376, 416);
+		facultyFormPanel.setBounds(600, 60, 370, 430);
 		facultyFormPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Faculty Information",
 				TitledBorder.CENTER, TitledBorder.TOP, null, new Color(0, 0, 0)));
 
@@ -96,7 +96,7 @@ public class FacultyPanel extends JPanel {
 		btnAddFaculty = new JButton("Add");
 		btnAddFaculty.setEnabled(false);
 		format.buttonFormat(btnAddFaculty, format.addIcon);
-		btnAddFaculty.setBounds(593, 486, 91, 30);
+		btnAddFaculty.setBounds(600, 500, 91, 30);
 		btnAddFaculty.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 //				faculty.addFaculty(fnameField.getText(), mnameField.getText(), lnameField.getText(),
@@ -112,7 +112,7 @@ public class FacultyPanel extends JPanel {
 		btnUpdateFaculty = new JButton("Update");
 		btnUpdateFaculty.setEnabled(false);
 		format.buttonFormat(btnUpdateFaculty, format.updateIcon);
-		btnUpdateFaculty.setBounds(736, 486, 91, 30);
+		btnUpdateFaculty.setBounds(741, 500, 91, 30);
 		btnUpdateFaculty.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int i = facultyTable.getSelectedRow();
@@ -136,7 +136,7 @@ public class FacultyPanel extends JPanel {
 		btnDeleteFaculty = new JButton("Delete");
 		btnDeleteFaculty.setEnabled(false);
 		format.buttonFormat(btnDeleteFaculty, format.deleteIcon);
-		btnDeleteFaculty.setBounds(878, 486, 91, 30);
+		btnDeleteFaculty.setBounds(879, 500, 91, 30);
 		btnDeleteFaculty.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int i = facultyTable.getSelectedRow();
@@ -152,7 +152,7 @@ public class FacultyPanel extends JPanel {
 
 		JButton btnNewFaculty = new JButton("New");
 		format.buttonFormat(btnNewFaculty, format.newIcon);
-		btnNewFaculty.setBounds(880, 11, 89, 30);
+		btnNewFaculty.setBounds(880, 20, 90, 30);
 		btnNewFaculty.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				clearFacultyFormFields();
@@ -174,6 +174,7 @@ public class FacultyPanel extends JPanel {
 		facultyFormPanel.add(lnameField);
 		
 		JLabel lblSpecialization = new JLabel("Specialization");
+		format.labelFormat(lblSpecialization);
 		facultyFormPanel.add(lblSpecialization);
 		
 		specField = new JTextField();
@@ -213,12 +214,12 @@ public class FacultyPanel extends JPanel {
 		JPanel tablePanel = new JPanel();
 		tablePanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Faculty List",
 				TitledBorder.CENTER, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		tablePanel.setBounds(14, 52, 564, 471);
+		tablePanel.setBounds(20, 60, 550, 470);
 		add(tablePanel);
 		tablePanel.setLayout(null);
 
 		JScrollPane facultyScrollPane = new JScrollPane();
-		facultyScrollPane.setBounds(6, 16, 552, 448);
+		facultyScrollPane.setBounds(6, 16, 538, 443);
 		tablePanel.add(facultyScrollPane);
 		facultyScrollPane.getViewport().setBackground(Color.WHITE);
 

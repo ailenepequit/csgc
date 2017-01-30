@@ -89,10 +89,6 @@ public class Room {
 		r.deleteRoom(id);
 	}
 
-	public int count() {
-		return r.countRooms();
-	}
-	
 	public ArrayList<Room> getLabRooms(){
 		return r.getLabRooms();
 	}

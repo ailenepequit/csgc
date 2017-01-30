@@ -40,12 +40,13 @@ import java.awt.Font;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.JLabel;
 
 @SuppressWarnings("serial")
 public class OfferingPanel extends JPanel {
 
 	private int offeringID, slots;
-	private JButton editBtn, btnDeleteOffering;
+	private JButton editBtn, btnDeleteOffering, printBtn, btnExport;
 
 	String sem, sy;
 	DefaultComboBoxModel<String> cb = new DefaultComboBoxModel<String>();
@@ -86,15 +87,22 @@ public class OfferingPanel extends JPanel {
 
 	static Scheduler s;
 	Statistics sv;
+	private JLabel lblNewLabel;
 
 	public OfferingPanel() {
 		setBounds(252, 73, 1002, 586);
 
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(259, 68, 733, 460);
+		scrollPane.setBounds(220, 70, 770, 460);
 		scrollPane.getViewport().setBackground(Color.WHITE);
+		lblNewLabel = new JLabel("No data to display.");
+		lblNewLabel.setEnabled(false);
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		scrollPane.setViewportView(lblNewLabel);
 
-		JButton printBtn = new JButton("Print");
+		printBtn = new JButton("Print");
+		printBtn.setEnabled(false);
 		printBtn.setBounds(903, 12, 89, 30);
 		format.buttonFormat(printBtn, format.printIcon);
 		printBtn.addActionListener(new ActionListener() {
@@ -154,7 +162,8 @@ public class OfferingPanel extends JPanel {
 			}
 		});
 
-		JButton btnExport = new JButton("Export");
+		btnExport = new JButton("Export");
+		btnExport.setEnabled(false);
 		btnExport.setBounds(783, 12, 104, 30);
 		format.buttonFormat(btnExport, format.imagesPath + "excelicon.png");
 		btnExport.addActionListener(new ActionListener() {
@@ -165,10 +174,11 @@ public class OfferingPanel extends JPanel {
 		});
 
 		listBy = new JList<String>();
-		listBy.setBorder(new TitledBorder(null, "Block List", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		listBy.setEnabled(false);
+		listBy.setBorder(new TitledBorder(null, "List", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		listBy.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		listBy.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		listBy.setBounds(10, 104, 223, 424);
+		listBy.setBounds(10, 104, 163, 424);
 
 		add(listBy);
 		listBy.addListSelectionListener(new ListSelectionListener() {
@@ -194,7 +204,7 @@ public class OfferingPanel extends JPanel {
 				}
 			}
 		});
-		comboBox.setBounds(10, 68, 125, 23);
+		comboBox.setBounds(10, 70, 163, 23);
 
 		btnViewTimetable = new JButton("View Timetable");
 		btnViewTimetable.setEnabled(false);
@@ -235,6 +245,7 @@ public class OfferingPanel extends JPanel {
 
 		add(printBtn);
 		add(scrollPane);
+		
 		add(btnDeleteOffering);
 		add(editBtn);
 		add(btnGenerateTimetable);
@@ -277,6 +288,8 @@ public class OfferingPanel extends JPanel {
 			}
 			btnViewTimetable.setEnabled(false);
 			break;
+		default:
+			break;
 		}
 		offerings_columns = new String[] { "Id", "Description", "Units", "Time/Day", "Room", "Faculty", "Class Size" };
 		tableComponents(offerings_data, offerings_columns);
@@ -314,7 +327,7 @@ public class OfferingPanel extends JPanel {
 
 		Object[] message = { "School Year: ", syCB, "Semester: ", semCB };
 
-		int option = JOptionPane.showConfirmDialog(this, message, "Generate Offeing Schedule for: ",
+		int option = JOptionPane.showConfirmDialog(this, message, "Generate Offering Schedule for: ",
 				JOptionPane.OK_CANCEL_OPTION);
 
 		if (option == JOptionPane.OK_OPTION) {
@@ -354,6 +367,10 @@ public class OfferingPanel extends JPanel {
 			comboBox.setEnabled(true);
 			btnGraphColoring.setEnabled(true);
 			btnViewTimetable.setEnabled(true);
+			btnExport.setEnabled(true);
+			printBtn.setEnabled(true);
+			listBy.setEnabled(true);
+			sortList("All Offerings");
 		}
 	}
 

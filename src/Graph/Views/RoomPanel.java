@@ -70,7 +70,7 @@ public class RoomPanel extends JPanel {
 		btnAddRoom = new JButton("Add");
 		btnAddRoom.setEnabled(false);
 		format.buttonFormat(btnAddRoom, format.addIcon);
-		btnAddRoom.setBounds(590, 488, 91, 30);
+		btnAddRoom.setBounds(600, 500, 91, 30);
 		btnAddRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String building = buildingComboBox.getSelectedItem().toString();
@@ -87,7 +87,7 @@ public class RoomPanel extends JPanel {
 		btnDeleteRoom = new JButton("Delete");
 		btnDeleteRoom.setEnabled(false);
 		format.buttonFormat(btnDeleteRoom, format.deleteIcon);
-		btnDeleteRoom.setBounds(881, 488, 91, 30);
+		btnDeleteRoom.setBounds(879, 500, 91, 30);
 		btnDeleteRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int i = roomTable.getSelectedRow();
@@ -102,9 +102,9 @@ public class RoomPanel extends JPanel {
 			}
 		});
 
-		btnUpdateRoom = new JButton("Update ");
+		btnUpdateRoom = new JButton("Update");
 		btnUpdateRoom.setEnabled(false);
-		btnUpdateRoom.setBounds(736, 488, 91, 30);
+		btnUpdateRoom.setBounds(741, 500, 91, 30);
 		format.buttonFormat(btnUpdateRoom, format.updateIcon);
 		btnUpdateRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -123,7 +123,7 @@ public class RoomPanel extends JPanel {
 
 		JButton btnNewRoom = new JButton("New");
 		format.buttonFormat(btnNewRoom, format.newIcon);
-		btnNewRoom.setBounds(883, 19, 89, 30);
+		btnNewRoom.setBounds(880, 20, 90, 30);
 		btnNewRoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				clearRoomFormFields();
@@ -133,7 +133,7 @@ public class RoomPanel extends JPanel {
 
 		String[] r = { "All", "Laboratory", "Lecture" };
 		comboBox = new JComboBox(r);
-		comboBox.setBounds(20, 19, 111, 30);
+		comboBox.setBounds(20, 20, 100, 30);
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String t = comboBox.getSelectedItem().toString();
@@ -148,7 +148,7 @@ public class RoomPanel extends JPanel {
 		});
 
 		JPanel roomFormPanel = new JPanel();
-		roomFormPanel.setBounds(590, 61, 382, 416);
+		roomFormPanel.setBounds(600, 60, 370, 430);
 		roomFormPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Room Information Details",
 				TitledBorder.CENTER, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		roomFormPanel.setLayout(null);
@@ -193,7 +193,7 @@ public class RoomPanel extends JPanel {
 		panel = new JPanel();
 		panel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Room List", TitledBorder.CENTER,
 				TitledBorder.TOP, null, new Color(0, 0, 0)));
-		panel.setBounds(14, 60, 528, 465);
+		panel.setBounds(20, 60, 550, 470);
 		add(panel);
 		panel.setLayout(null);
 
@@ -212,7 +212,7 @@ public class RoomPanel extends JPanel {
 		roomTable.setBounds(26, 92, 446, 462);
 		roomTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		JScrollPane roomListScrollPane = new JScrollPane();
-		roomListScrollPane.setBounds(6, 16, 516, 450);
+		roomListScrollPane.setBounds(6, 16, 538, 443);
 		panel.add(roomListScrollPane);
 		roomListScrollPane.setViewportView(roomTable);
 		roomListScrollPane.getViewport().setBackground(Color.WHITE);

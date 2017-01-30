@@ -71,7 +71,6 @@ public class HomeView extends JFrame {
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setTitle("Home");
-
 	}
 
 	public void components() {
@@ -212,10 +211,6 @@ public class HomeView extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				setSideBarButtonsUnselectedFormat();
 				sideBarButtonSelected(visualizationBtn);
-				//setPanelsVisibleToFalse();
-				
-//				offeringPanel.sv.setVisible(true);
-//				s.setVisible(true);
 			}
 		});
 
@@ -225,6 +220,7 @@ public class HomeView extends JFrame {
 		sidebarPanel.add(facultyBtn);
 		sidebarPanel.add(roomsBtn);
 		sidebarPanel.add(visualizationBtn);
+		sideBarButtonSelected(homeBtn);
 	}
 
 	public void sidebarButtonFormat(JButton button, String icon) {
@@ -266,5 +262,4 @@ public class HomeView extends JFrame {
 		contentPane.remove(subjectsPanel);
 		contentPane.remove(facultyPanel);
 	}
-	
 }
